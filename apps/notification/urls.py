@@ -1,6 +1,6 @@
 from django.urls import path
 
-app_name = 'post'
+app_name = 'notification'
 
 urlpatterns = [
 ]

@@ -21,4 +21,5 @@ urlpatterns = [
     path('account/', include('apps.account.urls')),
     path('post/', include('apps.post.urls')),
     path('channel/', include('apps.channel.urls')),
+    path('notification/', include('apps.notification.urls')),
 ]
