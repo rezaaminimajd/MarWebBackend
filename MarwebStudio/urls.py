@@ -20,4 +20,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('account/', include('apps.account.urls')),
     path('post/', include('apps.post.urls')),
+    path('channel/', include('apps.channel.urls')),
 ]
