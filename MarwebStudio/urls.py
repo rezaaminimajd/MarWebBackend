@@ -22,4 +22,5 @@ urlpatterns = [
     path('post/', include('apps.post.urls')),
     path('channel/', include('apps.channel.urls')),
     path('notification/', include('apps.notification.urls')),
+    path('^notifications/', include('notify.urls', 'notifications'))
 ]
