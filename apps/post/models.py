@@ -19,6 +19,7 @@ class Post(models.Model):
 
 
 class Comment(models.Model):
+
     def upload_path(self, filename):
         return os.path.join('private/', self.profile.user.username, 'comments', f'post{self.post.id}', str(self.id),
                             filename)
@@ -29,3 +30,4 @@ class Comment(models.Model):
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
     post = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE)
+    replies = models.ForeignKey('self', related_name='comments', on_delete=models.CASCADE)
