@@ -23,8 +23,6 @@ class Profile(models.Model):
     followings = models.ManyToManyField('self', related_name='followings')
 
 
-
-
 class Follow(PolymorphicModel):
     source = models.ForeignKey('account.Profile', related_name='followings', on_delete=models.CASCADE)
     type = models.CharField(max_length=20, choices=FollowTypes.TYPES)

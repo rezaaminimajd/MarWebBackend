@@ -14,3 +14,26 @@ class ProfileSerializers(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ['__all__']
+
+
+class FollowSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Follow
+        fields = []
+
+
+class FollowUserSerializers(serializers.ModelSerializer):
+
+    class Meta:
+        model = FollowUser
+        fields = ['target']
+
+
+class FollowChannelSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = FollowChannel
+        fields = ['target']
+
+
+class PolymorphicFollowSerializers(serializers.ModelSerializer):
+    pass
