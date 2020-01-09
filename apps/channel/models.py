@@ -10,4 +10,3 @@ class Channel(models.Model):
     authors = models.ManyToManyField(Profile, related_name='author_channels')
     create_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
-
