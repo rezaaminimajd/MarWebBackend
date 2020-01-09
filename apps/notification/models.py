@@ -14,8 +14,8 @@ class NotificationTypes:
     )
 
 
-class Notification:
-    user_link = models.CharField(max_length=200, null=False, blank=False)
+class Notification(models.Model):
+    user_link = models.CharField(max_length=200)
     post_link = models.CharField(max_length=200, null=True, blank=True)
-    notification_type = models.CharField(choices=NotificationTypes.TYPES, max_length=10, null=False, blank=False)
+    notification_type = models.CharField(choices=NotificationTypes.TYPES, max_length=10)
 

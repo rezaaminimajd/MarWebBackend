@@ -7,4 +7,8 @@ class Profile(models.Model):
     user = models.OneToOneField(User, related_name='profile', on_delete=models.CASCADE)
     age = models.IntegerField()
     telephone_number = PhoneNumberField(unique=True)
+    image = models.ImageField(null=True, blank=True)
+    followers = models.ManyToManyField('self', related_name='followers')
+    followings = models.ManyToManyField('self', related_name='followings')
+
 
