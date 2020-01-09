@@ -8,13 +8,16 @@ class ChannelAsListItemSerializer(ModelSerializer):
     authors = SerializerMethodField('_authors')
     followers_count = SerializerMethodField('_followers_count')
 
-    def _creator_username(self, channel: channel_models.Channel):
+    @staticmethod
+    def _creator_username(channel: channel_models.Channel):
         return channel.creator.user.username
 
-    def _authors(self, channel: channel_models.Channel):
+    @staticmethod
+    def _authors(channel: channel_models.Channel):
         return ','.join(channel.authors.all().values_list('user__username', flat=True))
 
-    def _followers_count(self, channel: channel_models.Channel):
+    @staticmethod
+    def _followers_count(channel: channel_models.Channel):
         return channel.followers.count()
 
     class Meta:
