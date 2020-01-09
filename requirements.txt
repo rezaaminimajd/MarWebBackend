@@ -10,4 +10,5 @@ phonenumbers==8.11.1
 pytz==2019.3
 six==1.13.0
 sqlparse==0.3.0
-
+django-polymorphic==2.1.2
+django-rest-polymorphic==0.1.8
