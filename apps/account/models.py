@@ -12,3 +12,4 @@ class Profile(models.Model):
     followings = models.ManyToManyField('self', related_name='followings')
 
 
+
