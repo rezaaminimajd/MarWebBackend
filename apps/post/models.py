@@ -2,30 +2,73 @@ import os
 
 from django.db import models
 
+from polymorphic.models import PolymorphicModel
+
 
 # Create your models here.
 
-class Post(models.Model):
+class UserActionTypes:
+    POST = 'post'
+    COMMENT = 'comment'
+    TYPES = (
+        (POST, 'post'),
+        (COMMENT, 'comment')
+    )
+
+
+class UserActionTemplate(PolymorphicModel):
+    from ..account.models import Profile
+    profile = models.ForeignKey(Profile, related_name='actions', on_delete=models.CASCADE)
+    body = models.TextField()
+    type = models.CharField(max_length=20, choices=UserActionTypes.TYPES)
+    create_date = models.DateTimeField(auto_now_add=True)
+    update_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'id:{self.id}, username:{self.profile.user.username}'
+
+
+class Post(UserActionTemplate):
 
     def upload_path(self, filename):
         return os.path.join('private/', self.profile.user.username, 'posts', str(self.id), filename)
 
-    profile = models.ForeignKey('account.Profile', related_name='posts', on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
-    body = models.TextField()
     media = models.FileField(upload_to=upload_path)
-    create_date = models.DateTimeField(auto_now_add=True)
-    update_date = models.DateTimeField(auto_now=True)
+
+    def pre_save(self):
+        self.type = UserActionTypes.POST
+
+    def save(self, *args, **kwargs):
+        self.pre_save()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f'id:{self.id}, username:{self.profile.user.username}'
 
 
-class Comment(models.Model):
+class Comment(UserActionTemplate):
+
     def upload_path(self, filename):
         return os.path.join('private/', self.profile.user.username, 'comments', f'post{self.post.id}', str(self.id),
                             filename)
 
-    profile = models.ForeignKey('account.Profile', related_name='comments', on_delete=models.CASCADE)
-    body = models.TextField()
     media = models.FileField(upload_to=upload_path)
-    create_date = models.DateTimeField(auto_now_add=True)
-    update_date = models.DateTimeField(auto_now=True)
-    post = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE)
+    post_related = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE)
+    replies = models.ForeignKey('self', related_name='comments', on_delete=models.CASCADE, null=True, blank=True)
+
+    def pre_save(self):
+        self.type = UserActionTypes.COMMENT
+
+    def save(self, *args, **kwargs):
+        self.pre_save()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f'id:{self.id}, username:{self.profile.user.username}'
+
+
+class Like(models.Model):
+    from ..account.models import Profile
+    target = models.ForeignKey(UserActionTemplate, related_name='likes', on_delete=models.CASCADE)
+    liker = models.ForeignKey(Profile, related_name='likes', on_delete=models.CASCADE)
