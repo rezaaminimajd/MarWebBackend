@@ -28,6 +28,10 @@ class UserActionTemplate(PolymorphicModel):
 
     media = models.FileField(upload_to=upload_path)
 
+    @property
+    def post_summary(self):
+        return self.body[:len(self.body) // 4]
+
     def __str__(self):
         return f'id:{self.id}, username:{self.profile.user.username}'
 
