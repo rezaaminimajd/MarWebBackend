@@ -38,6 +38,7 @@ class UserActionTemplate(PolymorphicModel):
 
 class Post(UserActionTemplate):
     title = models.CharField(max_length=200)
+    channel = models.ForeignKey('channel.Channel', related_name='posts', on_delete=models.CASCADE)
 
     def pre_save(self):
         self.type = UserActionTypes.POST
