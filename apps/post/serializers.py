@@ -1,3 +1,4 @@
+from rest_framework.relations import PrimaryKeyRelatedField
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from rest_polymorphic.serializers import PolymorphicSerializer
 
@@ -21,6 +22,18 @@ class PostAsListItemSerializer(ModelSerializer):
         fields = ['type', 'title', 'post_owner', 'summary', 'media', 'create_date', 'update_date']
 
 
+class UserActionSerializer(ModelSerializer):
+    owner = SerializerMethodField('_owner')
+
+    @staticmethod
+    def _owner(action: post_models.UserActionTemplate):
+        return action.profile.user.username
+
+    class Meta:
+        model = post_models.UserActionTemplate
+        fields = ['type', 'owner', 'body', 'media', 'create_date', 'update_date']
+
+
 class PostSerializer(ModelSerializer):
     post_owner = SerializerMethodField('_post_owner')
 
@@ -33,12 +46,31 @@ class PostSerializer(ModelSerializer):
         fields = ['type', 'title', 'post_owner', 'body', 'media', 'create_date', 'update_date']
 
 
+class SubCommentSerializer(ModelSerializer):
+    comment_owner = SerializerMethodField()
+
+    @staticmethod
+    def _comment_owner(comment: post_models.Comment):
+        return comment.profile.user.username
+
+    class Meta:
+        model = post_models.Comment
+        fields = ['type', 'post_related_id', 'title', 'comment_owner', 'body', 'media', 'create_date', 'update_date']
+
+
 class CommentSerializer(ModelSerializer):
-    pass
+    parent_comment = PrimaryKeyRelatedField()
+    replies = SubCommentSerializer()
+    comment_owner = SerializerMethodField()
 
+    @staticmethod
+    def _comment_owner(comment: post_models.Comment):
+        return comment.profile.user.username
 
-class UserActionSerializer(ModelSerializer):
-    pass
+    class Meta:
+        model = post_models.Comment
+        fields = ['type', 'parent_comment', 'post_related_id', 'title', 'comment_owner', 'body', 'media', 'create_date',
+                  'update_date', 'replies']
 
 
 class UserActionPolymorphismSerializer(PolymorphicSerializer):
