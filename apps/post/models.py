@@ -28,12 +28,17 @@ class UserActionTemplate(PolymorphicModel):
 
     media = models.FileField(upload_to=upload_path)
 
+    @property
+    def post_summary(self):
+        return self.body[:len(self.body) // 4]
+
     def __str__(self):
         return f'id:{self.id}, username:{self.profile.user.username}'
 
 
 class Post(UserActionTemplate):
     title = models.CharField(max_length=200)
+    channel = models.ForeignKey('channel.Channel', related_name='posts', on_delete=models.CASCADE)
 
     def pre_save(self):
         self.type = UserActionTypes.POST
