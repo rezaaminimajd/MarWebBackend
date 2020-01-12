@@ -19,12 +19,10 @@ class Profile(models.Model):
     age = models.IntegerField()
     telephone_number = PhoneNumberField(unique=True)
     image = models.ImageField(null=True, blank=True)
-    followers = models.ManyToManyField('self', related_name='followers')
-    followings = models.ManyToManyField('self', related_name='followings')
 
 
 class Follow(PolymorphicModel):
-    source = models.ForeignKey('account.Profile', related_name='all_followings', on_delete=models.CASCADE)
+    source = models.ForeignKey('account.Profile', related_name='followings', on_delete=models.CASCADE)
     type = models.CharField(max_length=20, choices=FollowTypes.TYPES)
 
 
