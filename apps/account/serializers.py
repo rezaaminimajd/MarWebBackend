@@ -1,4 +1,4 @@
-from rest_framework import serializers
+from rest_framework import serializers, status
 from rest_framework.serializers import SerializerMethodField
 from rest_framework.validators import UniqueValidator
 from .models import *
@@ -7,10 +7,16 @@ from rest_polymorphic.serializers import PolymorphicSerializer
 
 class UserSerializers(serializers.ModelSerializer):
     email = serializers.EmailField(validators=[UniqueValidator(queryset=User.objects.all())])
+    user = serializers.CharField(validators=[UniqueValidator(queryset=User.objects.all())])
 
     class Meta:
         model: User
-        fields = ['email', 'username', 'password']
+        fields = ['email', 'username', 'password', 'repeat_password']
+
+    def validate(self, data):
+        if data['password'] != data['repeat_password']:
+            raise serializers.ValidationError('password don\'t match')
+        return data
 
 
 class ProfileSerializers(serializers.ModelSerializer):

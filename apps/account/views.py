@@ -15,7 +15,8 @@ class SingInView(GenericAPIView):
     serializer_class = UserSerializers
 
     def post(self, request):
-        pass
+        serializer = self.get_serializer(request.data)
+        serializer.save()
 
 
 class LogoutView(GenericAPIView):
