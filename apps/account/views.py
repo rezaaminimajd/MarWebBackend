@@ -1,13 +1,21 @@
 from django.shortcuts import render
 from rest_framework.generics import GenericAPIView
+from rest_framework import status, permissions
+from .serializers import *
 
 
 class SignUpView(GenericAPIView):
-    pass
+    serializer_class = UserSerializers
+
+    def post(self, request):
+        pass
 
 
 class SingInView(GenericAPIView):
-    pass
+    serializer_class = UserSerializers
+
+    def post(self, request):
+        pass
 
 
 class LogoutView(GenericAPIView):
