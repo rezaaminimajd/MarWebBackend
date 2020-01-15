@@ -10,7 +10,7 @@ class SignUpView(GenericAPIView):
     serializer_class = UserSerializers
 
     def post(self, request):
-        serializer = self.get_serializer(request.data)
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid()
         serializer.save()
         return Response({'detail': 'User created successfully.'}, status=200)
