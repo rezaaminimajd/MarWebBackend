@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
+from datetime import datetime, timedelta
 
 from polymorphic.models import PolymorphicModel
 
@@ -46,3 +47,16 @@ class FollowChannel(Follow):
     def save(self, *args, **kwargs):
         self.pre_save()
         super().save(*args, **kwargs)
+
+
+class ProfileToken(models.Model):
+    profile = models.ForeignKey(Profile, related_name='tokens', on_delete=models.CASCADE)
+    date = models.DateTimeField()
+
+    @property
+    def isValidToken(self):
+        now = datetime.now()
+        deadline = self.date + timedelta(hours=24)
+        if now < deadline:
+            return True
+        return False
