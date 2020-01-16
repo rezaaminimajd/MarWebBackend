@@ -47,7 +47,10 @@ class ResetPasswordView(GenericAPIView):
 
 
 class ProfileView(GenericAPIView):
-    pass
+    def get(self, request, username):
+        user = get_object_or_404(username=username)
+        profile = user.profile
+        return Response(data=profile, status=status.HTTP_200_OK)
 
 
 class FollowView(GenericAPIView):
