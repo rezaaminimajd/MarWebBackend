@@ -43,7 +43,18 @@ class LogoutView(GenericAPIView):
 
 
 class ResetPasswordView(GenericAPIView):
-    pass
+    def post(self, request):
+        old_password = request.data['old_password']
+        new_password = request.data['new_password']
+        repeat_new_password = request.data['repeat_new_password']
+        user: User = request.user
+        if user.password != old_password:
+            return Response({'detail': 'password is wrong'}, status=status.HTTP_403_FORBIDDEN)
+        if new_password != repeat_new_password:
+            return Response({'detail': 'new passwords don\'t match'}, status=status.HTTP_403_FORBIDDEN)
+        user.password = new_password
+        user.save()
+        return Response({'detail': 'password change successfully'}, status=status.HTTP_200_OK)
 
 
 class ProfileView(GenericAPIView):
