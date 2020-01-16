@@ -47,10 +47,13 @@ class ResetPasswordView(GenericAPIView):
 
 
 class ProfileView(GenericAPIView):
+    serializer_class = ProfileSerializers
+
     def get(self, request, username):
-        user = get_object_or_404(username=username)
+        user = get_object_or_404(User, username=username)
         profile = user.profile
-        return Response(data=profile, status=status.HTTP_200_OK)
+        data = self.get_serializer(profile).data
+        return Response(data=data, status=status.HTTP_200_OK)
 
 
 class FollowView(GenericAPIView):
