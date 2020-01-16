@@ -13,7 +13,6 @@ class SignUpView(GenericAPIView):
     def post(self, request):
         serializer: UserSerializers = self.get_serializer(data=request.data)
         if serializer.is_valid():
-
             serializer.save()
             return Response({'detail': f'{request.data["username"]} created successfully.'}, status=status.HTTP_200_OK)
         else:
@@ -26,6 +25,7 @@ class LoginView(GenericAPIView):
         username = request.data['username']
         password = request.data['password']
         user = get_object_or_404(User, username=username)
+        ProfileToken.objects.create(profile=user.profile, date=datetime.now())
         print(user.username, user.password, password)
         if user.password != password:
             return Response({'detail': 'password is wrong'}, status=status.HTTP_403_FORBIDDEN)

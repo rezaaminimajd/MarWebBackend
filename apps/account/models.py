@@ -51,7 +51,7 @@ class FollowChannel(Follow):
 
 class ProfileToken(models.Model):
     profile = models.ForeignKey(Profile, related_name='tokens', on_delete=models.CASCADE)
-    date = models.DateTimeField()
+    date = models.DateTimeField(auto_now_add=True)
 
     @property
     def isValidToken(self):

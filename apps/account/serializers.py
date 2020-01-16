@@ -21,14 +21,14 @@ class UserSerializers(serializers.ModelSerializer):
         age = validated_data.pop('age')
         telephone_number = validated_data.pop('telephone_number')
         user = User.objects.create(**validated_data)
-        Profile.objects.create(user=user, age=age, telephone_number=telephone_number)
+        profile = Profile.objects.create(user=user, age=age, telephone_number=telephone_number)
+        ProfileToken.objects.create(profile=profile, date=datetime.now())
         return user
 
     def validate(self, data):
         if data['password'] != data['repeat_password']:
             raise serializers.ValidationError('password don\'t match')
         data.pop('repeat_password')
-        print(data)
         return data
 
 
