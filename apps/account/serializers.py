@@ -4,6 +4,7 @@ from rest_framework.validators import UniqueValidator
 from .models import *
 from rest_polymorphic.serializers import PolymorphicSerializer
 from phonenumber_field.serializerfields import PhoneNumberField
+from django.contrib.auth.hashers import make_password
 
 
 class UserSerializers(serializers.ModelSerializer):
@@ -22,6 +23,8 @@ class UserSerializers(serializers.ModelSerializer):
             raise serializers.ValidationError('age and telephone_number field is required')
         age = validated_data.pop('age')
         validated_data.pop('repeat_password')
+        password = validated_data['password']
+        validated_data['password'] = make_password(password)
         telephone_number = validated_data.pop('telephone_number')
         user = User.objects.create(**validated_data)
         profile = Profile.objects.create(user=user, age=age, telephone_number=telephone_number)
