@@ -24,7 +24,7 @@ class UserActionTemplate(PolymorphicModel):
     update_date = models.DateTimeField(auto_now=True)
 
     def upload_path(self, filename):
-        return os.path.join('private/', self.profile.user.username, 'actions', str(self.id), filename)
+        return os.path.join('private/', self.profile.user.username, 'actions', self.type, str(self.id), filename)
 
     media = models.FileField(upload_to=upload_path)
 
