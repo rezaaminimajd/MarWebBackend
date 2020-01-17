@@ -4,13 +4,14 @@ from rest_framework.validators import UniqueValidator
 from .models import *
 from rest_polymorphic.serializers import PolymorphicSerializer
 from phonenumber_field.serializerfields import PhoneNumberField
+from django.contrib.auth.hashers import make_password
 
 
 class UserSerializers(serializers.ModelSerializer):
     email = serializers.EmailField(validators=[UniqueValidator(queryset=User.objects.all())])
-    repeat_password = serializers.CharField(max_length=100)
-    age = serializers.IntegerField()
-    telephone_number = PhoneNumberField()
+    repeat_password = serializers.CharField(max_length=100, required=False)
+    age = serializers.IntegerField(required=False)
+    telephone_number = PhoneNumberField(required=False)
 
     class Meta:
         model = User
@@ -18,7 +19,12 @@ class UserSerializers(serializers.ModelSerializer):
                   'last_name']
 
     def create(self, validated_data):
+        if 'repeat_password' not in validated_data.keys() or 'telephone_number' not in validated_data.keys():
+            raise serializers.ValidationError('age and telephone_number field is required')
         age = validated_data.pop('age')
+        validated_data.pop('repeat_password')
+        password = validated_data['password']
+        validated_data['password'] = make_password(password)
         telephone_number = validated_data.pop('telephone_number')
         user = User.objects.create(**validated_data)
         profile = Profile.objects.create(user=user, age=age, telephone_number=telephone_number)
@@ -26,9 +32,8 @@ class UserSerializers(serializers.ModelSerializer):
         return user
 
     def validate(self, data):
-        if data['password'] != data['repeat_password']:
+        if 'repeat_password' not in data.keys() or data['password'] != data['repeat_password']:
             raise serializers.ValidationError('password don\'t match')
-        data.pop('repeat_password')
         return data
 
 
@@ -37,7 +42,7 @@ class ProfileSerializers(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ['__all__']
+        fields = ['age', 'telephone_number', 'user']
 
 
 class FollowSerializers(serializers.ModelSerializer):

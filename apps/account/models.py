@@ -24,7 +24,7 @@ class Profile(models.Model):
 
 class Follow(PolymorphicModel):
     source = models.ForeignKey('account.Profile', related_name='followings', on_delete=models.CASCADE)
-    type = models.CharField(max_length=20, choices=FollowTypes.TYPES)
+    follow_type = models.CharField(max_length=20, choices=FollowTypes.TYPES)
 
 
 class FollowUser(Follow):
