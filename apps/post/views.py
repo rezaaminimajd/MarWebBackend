@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import status
 
-from rest_framework.generics import GenericAPIView
+from rest_framework.generics import GenericAPIView, get_object_or_404
 from rest_framework.response import Response
 
 from apps.post.services.channel_posts_list import ChannelPosts
@@ -13,28 +13,35 @@ from . import serializers as post_serializers
 
 
 class ChannelPostsListAPIView(GenericAPIView):
-    queryset = post_models.UserActionTemplate
     serializer_class = post_serializers.PostAsListItemSerializer
 
     def get(self, request, channel_id):
         posts, errors = ChannelPosts(channel_id=channel_id)()
         if errors:
             return Response(data={'errors': errors}, status=status.HTTP_404_NOT_FOUND)
-        return Response(data={'posts': posts}, status=status.HTTP_200_OK)
+        data = self.get_serializer(posts, many=True, read_only=True)
+        return Response(data={'posts': data}, status=status.HTTP_200_OK)
 
 
-class PostAPIView(GenericAPIView):
+class PostDetailAPIView(GenericAPIView):
+    queryset = post_models.Post.objects.all()
+    serializer_class = post_serializers.PostSerializer
 
     def get(self, request, post_id):
-        pass
-
-    def post(self, request):
-        pass
+        post = get_object_or_404(post_models.Post, id=post_id)
+        data = self.get_serializer(post, read_only=True)
+        return Response(data={'post': data}, status=status.HTTP_200_OK)
 
     def put(self, request, post_id):
         pass
 
     def delete(self, request, post_id):
+        post_models.Post.objects.filter(id=post_id).delete()
+
+
+class NewPostAPIView(GenericAPIView):
+
+    def post(self, request, channel_id):
         pass
 
 
