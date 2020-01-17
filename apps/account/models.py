@@ -31,7 +31,7 @@ class FollowUser(Follow):
     target = models.ForeignKey('account.Profile', related_name='followers_user', on_delete=models.CASCADE)
 
     def pre_save(self):
-        self.type = FollowTypes.USER
+        self.follow_type = FollowTypes.USER
 
     def save(self, *args, **kwargs):
         self.pre_save()
@@ -42,7 +42,7 @@ class FollowChannel(Follow):
     target = models.ForeignKey('channel.Channel', related_name='followers_channel', on_delete=models.CASCADE)
 
     def pre_save(self):
-        self.type = FollowTypes.CHANNEL
+        self.follow_type = FollowTypes.CHANNEL
 
     def save(self, *args, **kwargs):
         self.pre_save()
