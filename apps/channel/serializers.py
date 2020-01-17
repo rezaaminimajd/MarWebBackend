@@ -26,7 +26,7 @@ class ChannelAsListItemSerializer(ModelSerializer):
 
     @staticmethod
     def _followers_count(channel: channel_models.Channel):
-        return channel.followers.count()
+        return channel.followers_channel.count()
 
     class Meta:
         model = channel_models.Channel
@@ -50,7 +50,7 @@ class ChannelSerializer(ModelSerializer):
 
     @staticmethod
     def _followers_count(channel: channel_models.Channel):
-        return channel.followers.count()
+        return channel.followers_channel.count()
 
     class Meta:
         model = channel_models.Channel
