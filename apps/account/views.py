@@ -16,24 +16,9 @@ class SignUpView(GenericAPIView):
             user = serializer.save()
             user.is_active = True
             user.save()
-            print(user.is_active)
             return Response({'detail': f'{request.data["username"]} created successfully.'}, status=status.HTTP_200_OK)
         else:
             return Response({'detail': f'{serializer.errors}'}, status=status.HTTP_406_NOT_ACCEPTABLE)
-
-
-class LoginView(GenericAPIView):
-
-    def post(self, request):
-        username = request.data['username']
-        password = request.data['password']
-        user = get_object_or_404(User, username=username)
-        ProfileToken.objects.create(profile=user.profile, date=datetime.now())
-        if not check_password(password, user.password):
-            return Response({'detail': 'password is wrong'}, status=status.HTTP_403_FORBIDDEN)
-        user.is_active = True
-        user.save()
-        return Response({'detail': 'login successfully'}, status=status.HTTP_200_OK)
 
 
 class LogoutView(GenericAPIView):
@@ -85,9 +70,7 @@ class GetFollowersView(GenericAPIView):
 
     def get(self, request, username):
         user = get_object_or_404(User, username=username)
-        followers = user.profile.followers_user
-        data = self.get_serializer(data=followers, many=True)
-        if data.is_valid():
-            print("yes")
+        followers = user.profile.followers_user.all()
+        data = self.get_serializer(followers, many=True).data
         print('data:', data)
-        return Response(data=data.data, status=status.HTTP_200_OK)
+        return Response(data={'followers': data}, status=status.HTTP_200_OK)

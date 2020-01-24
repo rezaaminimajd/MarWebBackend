@@ -59,6 +59,11 @@ class FollowSerializers(serializers.ModelSerializer):
 
 class FollowUserSerializers(serializers.ModelSerializer):
     target_name = SerializerMethodField('_target_name')
+    source_name = SerializerMethodField('_source_name')
+
+    @staticmethod
+    def _source_name(follow: Follow):
+        return follow.source.user.username
 
     @staticmethod
     def _target_name(follow: FollowUser):
@@ -66,11 +71,17 @@ class FollowUserSerializers(serializers.ModelSerializer):
 
     class Meta:
         model = FollowUser
-        fields = ['target_name']
+        fields = ['target_name', 'source_name']
 
 
 class FollowChannelSerializers(serializers.ModelSerializer):
     target_name = SerializerMethodField('_target_name')
+    source_name = SerializerMethodField('_source_name')
+
+
+    @staticmethod
+    def _source_name(follow: Follow):
+        return follow.source.user.username
 
     @staticmethod
     def _target_name(follow: FollowUser):
@@ -78,11 +89,12 @@ class FollowChannelSerializers(serializers.ModelSerializer):
 
     class Meta:
         model = FollowChannel
-        fields = ['target_name']
+        fields = ['target_name', 'source_name']
 
 
 class PolymorphicFollowSerializers(PolymorphicSerializer):
     model_serializer_mapping = {
         Follow: FollowSerializers,
         FollowUser: FollowUserSerializers,
+        FollowChannel: FollowChannelSerializers,
     }
