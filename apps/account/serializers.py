@@ -82,8 +82,7 @@ class FollowChannelSerializers(serializers.ModelSerializer):
 
 
 class PolymorphicFollowSerializers(PolymorphicSerializer):
-    follow_serializers = {
+    model_serializer_mapping = {
         Follow: FollowSerializers,
         FollowUser: FollowUserSerializers,
-        FollowChannel: FollowChannelSerializers
     }
