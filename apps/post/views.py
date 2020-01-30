@@ -29,7 +29,7 @@ class PostDetailAPIView(GenericAPIView):
 
     def get(self, request, post_id):
         post = get_object_or_404(post_models.Post, id=post_id)
-        data = self.get_serializer(post, read_only=True)
+        data = self.get_serializer(post, read_only=True).data
         return Response(data={'post': data}, status=status.HTTP_200_OK)
 
     def put(self, request, post_id):
@@ -40,15 +40,22 @@ class PostDetailAPIView(GenericAPIView):
 
 
 class NewPostAPIView(GenericAPIView):
+    serializer_class = post_serializers.PostSerializer
 
     def post(self, request, channel_id):
-        pass
+        channel = get_object_or_404()
 
 
 class CommentsListAPIView(GenericAPIView):
+    serializer_class = post_serializers.CommentSerializer
+    queryset = post_models.Comment.objects.all()
 
     def get(self, request, post_id):
-        pass
+        if not post_models.Post.objects.filter(id=post_id).exists():
+            return Response(data={'errors': ['Post with given id not exists']}, status=status.HTTP_406_NOT_ACCEPTABLE)
+        comments = self.get_queryset().filter(post_related_id=post_id)
+        data = self.get_serializer(comments, many=True).data
+        return Response(data={'comments': data}, status=status.HTTP_200_OK)
 
 
 class CommentAPIView(GenericAPIView):
