@@ -1,10 +1,13 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.models import User
 
+from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
 
 
 from . import models as channel_models
 from . import serializers as channel_serializers
+from apps.account import models as account_models
 
 # Create your views here.
 
@@ -49,7 +52,14 @@ class ChannelAPIView(GenericAPIView):
 class FollowAPIView(GenericAPIView):
 
     def post(self, request, channel_id):
-        pass
+        source : User = request.user
+        target: Channel = get_object_or_404(channel_models.Channel, id=channel_id)
+        follow_model = account_models.Follow.objects.create(source=source.profile, target=target, follow_type=FollowTypes.CHANNEL)
+        follow_model.save()
+        return Response(status=status.HTTP_200_OK)
 
     def delete(self, request, channel_id):
-        pass
+        source : User = request.user
+        target: Channel = get_object_or_404(channel_models.Channel, id=channel_id)
+        account_models.FollowChannel.objects.filter(source=source.profile).filter(target=target).delete()
+        return Response(status=status.HTTP_200_OK)
