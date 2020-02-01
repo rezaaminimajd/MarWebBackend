@@ -26,8 +26,7 @@ class LogoutView(GenericAPIView):
 
     def post(self, request):
         user: User = request.user
-        user.is_active = False
-        user.save()
+        user.auth_token.delete()
         return Response({'detail': 'logout successfully'}, status=status.HTTP_200_OK)
 
 
@@ -61,8 +60,8 @@ class FollowUserView(GenericAPIView):
     def post(self, request, username):
         source: User = request.user
         target: User = get_object_or_404(User, username=username)
-        Follow.objects.create(source=source.profile, target=target.profile, follow_type=FollowTypes.USER)
-        return Response(status=status.HTTP_200_OK)
+        FollowUser.objects.create(source=source.profile, target=target.profile, follow_type=FollowTypes.USER)
+        return Response(data={"detail": "follow successfully"}, status=status.HTTP_200_OK)
 
 
 class GetFollowersView(GenericAPIView):
