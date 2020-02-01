@@ -74,3 +74,13 @@ class GetFollowersView(GenericAPIView):
         data = self.get_serializer(followers, many=True).data
         print('data:', data)
         return Response(data={'followers': data}, status=status.HTTP_200_OK)
+
+
+class GetFollowingView(GenericAPIView):
+    serializer_class = PolymorphicFollowSerializers
+
+    def get(self, request, username):
+        user = get_object_or_404(User, username=username)
+        following = user.profile.followings.all()
+        data = self.get_serializer(following, many=True).data
+        return Response(data={'followings': data}, status=status.HTTP_200_OK)
