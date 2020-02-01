@@ -59,13 +59,13 @@ class SubCommentSerializer(ModelSerializer):
 
 
 class CommentSerializer(ModelSerializer):
-    # parent_comment = PrimaryKeyRelatedField()
-    # replies = SubCommentSerializer()
-    # comment_owner = SerializerMethodField()
+    parent_comment = PrimaryKeyRelatedField()
+    replies = SubCommentSerializer()
+    comment_owner = SerializerMethodField()
 
-    # @staticmethod
-    # def _comment_owner(comment: post_models.Comment):
-    #     return comment.profile.user.username
+    @staticmethod
+    def _comment_owner(comment: post_models.Comment):
+        return comment.profile.user.username
 
     class Meta:
         model = post_models.Comment
