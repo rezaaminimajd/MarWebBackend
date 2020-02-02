@@ -60,3 +60,9 @@ class ProfileToken(models.Model):
         if now < deadline:
             return True
         return False
+
+
+class ForgotPasswordToken(models.Model):
+    uid = models.CharField(max_length=100)
+    token = models.CharField(max_length=100)
+    expiration_date = models.DateTimeField()

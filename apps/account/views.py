@@ -1,4 +1,11 @@
+import secrets
+
+from django.core.mail import EmailMultiAlternatives
 from django.shortcuts import render, get_object_or_404
+from django.template.loader import render_to_string
+from django.utils import timezone
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from rest_framework import status
 from rest_framework.generics import GenericAPIView
 from rest_framework import status, permissions
@@ -54,6 +61,9 @@ class ProfileView(GenericAPIView):
         data = self.get_serializer(profile).data
         return Response(data=data, status=status.HTTP_200_OK)
 
+    def put(self, request):
+        pass
+
 
 class FollowUserView(GenericAPIView):
 
@@ -83,3 +93,67 @@ class GetFollowingView(GenericAPIView):
         following = user.profile.followings.all()
         data = self.get_serializer(following, many=True).data
         return Response(data={'followings': data}, status=status.HTTP_200_OK)
+
+
+class ForgotPasswordView(GenericAPIView):
+    serializer_class = ForgotPasswordSerializer
+
+    def post(self, request):
+        data = self.get_serializer(request.data).data
+
+        user = get_object_or_404(User, email=data['email'])
+
+        uid = urlsafe_base64_encode(force_bytes(user.id))
+        ForgotPasswordToken.objects.filter(uid=uid).delete()
+        reset_password_token = ForgotPasswordToken(
+            uid=uid,
+            token=secrets.token_urlsafe(32),
+            expiration_date=timezone.now() + timezone.timedelta(hours=24),
+        )
+        reset_password_token.save()
+
+        context = {
+            'domain': 'localhost:8000',
+            'username': user.username,
+            'uid': reset_password_token.uid,
+            'token': reset_password_token.token,
+        }
+        email_html_message = render_to_string('account/email/user_reset_password.html', context)
+        email_plaintext_message = render_to_string('account/email/user_reset_password.txt', context)
+        msg = EmailMultiAlternatives(
+            "Password Reset for {title}".format(title="Marweb Studio"),
+            email_plaintext_message,
+            "gmail@gmail.com",
+            [user.email]
+        )
+        msg.attach_alternative(email_html_message, "text/html")
+        msg.send()
+
+        return Response({'detail': 'Successfully Sent Reset Password Email'}, status=200)
+
+
+class ForgotPasswordConfirmView(GenericAPIView):
+    serializer_class = ForgotPasswordConfirmSerializer
+
+    def post(self, request):
+        data = self.get_serializer(request.data).data
+
+        rs_token = get_object_or_404(ForgotPasswordToken, uid=data['uid'], token=data['token'])
+        if (timezone.now() - rs_token.expiration_date).total_seconds() > 24 * 60 * 60:
+            return Response({'error': 'Token Expired'}, status=400)
+
+        user = get_object_or_404(User, id=urlsafe_base64_decode(data['uid']).decode('utf-8'))
+        user.password = make_password(data['new_password1'])
+        user.save()
+        return Response({'detail': 'Successfully Changed Password'}, status=200)
+
+
+class IsFollowingAPIView(GenericAPIView):
+
+    def post(self, request, username):
+        user: User = get_object_or_404(User, username=username)
+        is_following = False
+        if request.user in user.profile.followers_user:
+            is_following = True
+        return Response(data={'is_following': is_following}, status=status.HTTP_200_OK)
+

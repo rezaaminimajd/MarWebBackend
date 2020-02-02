@@ -90,7 +90,7 @@ class CommentAPIView(GenericAPIView):
         if user != comment.profile.user:
             return Response(data={'detail': 'this post is not for this user'}, status=status.HTTP_403_FORBIDDEN)
 
-        #todo update
+        # todo update
 
     def delete(self, request, post_id, comment_id):
         user: User = request.user
@@ -99,10 +99,23 @@ class CommentAPIView(GenericAPIView):
         if user != comment.profile.user:
             return Response(data={'detail': 'this post is not for this user'}, status=status.HTTP_403_FORBIDDEN)
 
-        #todo delete
+        # todo delete
 
 
 class LikeAPIView(GenericAPIView):
 
     def post(self, request, action_id):
         pass
+
+
+class NewPostsAPIVIew(GenericAPIView):
+    pass
+
+
+class HotPostsAPIView(GenericAPIView):
+    queryset = Post.objects.all()
+
+    def get(self):
+        pass  # todo bazen bazen bega hade
+
+
