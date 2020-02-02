@@ -2,11 +2,10 @@ from django.contrib.auth.models import User
 from django.core.serializers import get_serializer
 from django.shortcuts import render, get_object_or_404
 from rest_framework import status
-
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 
-from apps.post.models import Post, Comment
+from apps.post.models import Post, Comment, UserActionTemplate, Like
 from apps.post.serializers import PostSerializer, CommentSerializer
 from apps.post.services.channel_posts_list import ChannelPosts
 from . import models as post_models
@@ -105,7 +104,9 @@ class CommentAPIView(GenericAPIView):
 class LikeAPIView(GenericAPIView):
 
     def post(self, request, action_id):
-        pass
+        action = get_object_or_404(UserActionTemplate, id=action_id)
+        Like.objects.create(target=action, liker=request.user.profile)
+        return Response(data={'detail': 'like successfully'}, status=status.HTTP_200_OK)
 
 
 class NewPostsAPIVIew(GenericAPIView):
@@ -117,5 +118,3 @@ class HotPostsAPIView(GenericAPIView):
 
     def get(self):
         pass  # todo bazen bazen bega hade
-
-
