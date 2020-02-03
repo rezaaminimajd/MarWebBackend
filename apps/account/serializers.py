@@ -54,7 +54,7 @@ class FollowSerializers(serializers.ModelSerializer):
 
     @staticmethod
     def _source_name(follow: Follow):
-        return follow.source.user.username
+        return follow.source.username
 
     class Meta:
         model = Follow
@@ -67,11 +67,11 @@ class FollowUserSerializers(serializers.ModelSerializer):
 
     @staticmethod
     def _source_name(follow: Follow):
-        return follow.source.user.username
+        return follow.source.username
 
     @staticmethod
     def _target_name(follow: FollowUser):
-        return follow.target.user.username
+        return follow.target.username
 
     class Meta:
         model = FollowUser
@@ -84,11 +84,11 @@ class FollowChannelSerializers(serializers.ModelSerializer):
 
     @staticmethod
     def _source_name(follow: Follow):
-        return follow.source.user.username
+        return follow.source.username
 
     @staticmethod
     def _target_name(follow: FollowUser):
-        return follow.target.user.username
+        return follow.target.username
 
     class Meta:
         model = FollowChannel
