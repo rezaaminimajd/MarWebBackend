@@ -27,7 +27,7 @@ class UserActionTemplate(PolymorphicModel):
     def upload_path(self, filename):
         return os.path.join('private/', self.user.username, 'actions', self.type, str(self.id), filename)
 
-    media = models.FileField(upload_to=upload_path)
+    media = models.FileField(upload_to=upload_path, null=True, blank=True)
 
     @property
     def post_summary(self):
@@ -69,4 +69,4 @@ class Comment(UserActionTemplate):
 
 class Like(models.Model):
     target = models.ForeignKey('post.UserActionTemplate', related_name='likes', on_delete=models.CASCADE)
-    liker = models.ForeignKey('account.Profile', related_name='likes', on_delete=models.CASCADE)
+    liker = models.ForeignKey(User, related_name='likes', on_delete=models.CASCADE)
