@@ -1,6 +1,8 @@
 from rest_framework import serializers, status
 from rest_framework.serializers import SerializerMethodField
 from rest_framework.validators import UniqueValidator
+
+from apps.channel.models import Channel
 from .models import *
 from rest_polymorphic.serializers import PolymorphicSerializer
 from phonenumber_field.serializerfields import PhoneNumberField
@@ -29,6 +31,8 @@ class UserSerializers(serializers.ModelSerializer):
         user = User.objects.create(**validated_data)
         profile = Profile.objects.create(user=user, age=age, telephone_number=telephone_number)
         ProfileToken.objects.create(profile=profile, date=datetime.now())
+        channel = Channel.objects.create(creator=user, title=user.username)
+        channel.authors.add(user)
         return user
 
     def validate(self, data):
