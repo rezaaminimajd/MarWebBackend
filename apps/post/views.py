@@ -39,7 +39,7 @@ class PostAPIView(GenericAPIView):
         return Response(data={'post': post}, status=status.HTTP_200_OK)
 
     def post(self, request):
-        post = self.get_serializer(data=request.data)
+        post = post_serializers.PostCreateSerializer(data=request.data)
         post.is_valid(raise_exception=True)
         post.save()
         return Response(data={'detail': 'post has been registered'}, status=status.HTTP_200_OK)
