@@ -3,6 +3,7 @@ from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.generics import GenericAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from apps.post.models import Post, Comment, UserActionTemplate, UserActionTypes, Like
@@ -19,6 +20,7 @@ from . import serializers as post_serializers
 class ChannelPostsListAPIView(GenericAPIView):
     queryset = post_models.UserActionTemplate
     serializer_class = post_serializers.PostAsListItemSerializer
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, channel_id):
         posts, errors = ChannelPosts(channel_id=channel_id)()
@@ -29,6 +31,7 @@ class ChannelPostsListAPIView(GenericAPIView):
 
 class PostAPIView(GenericAPIView):
     serializer_class = PostSerializer
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, post_id):
         post = get_object_or_404(Post, id=post_id)
@@ -60,6 +63,7 @@ class PostAPIView(GenericAPIView):
 
 
 class CommentsListAPIView(GenericAPIView):
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, post_id):
         post: Post = get_object_or_404(Post, id=post_id)
@@ -69,6 +73,7 @@ class CommentsListAPIView(GenericAPIView):
 
 class CommentAPIView(GenericAPIView):
     serializer_class = CommentSerializer
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, post_id, comment_id):
         post = get_object_or_404(Post, id=post_id)
@@ -103,6 +108,7 @@ class CommentAPIView(GenericAPIView):
 
 
 class LikeAPIView(GenericAPIView):
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, action_id):
         user_action = get_object_or_404(UserActionTemplate, id=action_id)
@@ -113,6 +119,7 @@ class LikeAPIView(GenericAPIView):
 class NewPostsAPIVIew(GenericAPIView):
     queryset = UserActionTemplate.objects.all()
     serializer_class = post_serializers.PostAsListItemSerializer
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         posts = self.get_queryset().filter(type=UserActionTypes.POST).order_by('-create_date')
@@ -123,6 +130,7 @@ class NewPostsAPIVIew(GenericAPIView):
 class HotPostsAPIView(GenericAPIView):
     queryset = UserActionTemplate.objects.all()
     serializer_class = post_serializers.PostAsListItemSerializer
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         posts = self.get_queryset().filter(type=UserActionTypes.POST).annotate(likes_count=Count('likes')).order_by(
@@ -133,6 +141,7 @@ class HotPostsAPIView(GenericAPIView):
 
 class FollowedChannelsPostsAPIView(GenericAPIView):
     serializer_class = post_serializers.PostAsListItemSerializer
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         posts = FollowedChannelsPosts(request=request)()
@@ -143,6 +152,7 @@ class FollowedChannelsPostsAPIView(GenericAPIView):
 class ParticipatedPostsAPIView(GenericAPIView):
     serializer_class = post_serializers.PostAsListItemSerializer
     queryset = post_models.Comment.objects.all()
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         posts_ids = self.get_queryset().filter(user=self.request.user).values_list('post_related_id', flat=True)
