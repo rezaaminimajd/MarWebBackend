@@ -22,7 +22,8 @@ class ChannelAsListItemSerializer(ModelSerializer):
 
     @staticmethod
     def _authors(channel: channel_models.Channel):
-        return ','.join(channel.authors.all().values_list('user__username', flat=True))
+
+        return ','.join(channel.authors.all().values_list('username', flat=True))
 
     @staticmethod
     def _followers_count(channel: channel_models.Channel):
