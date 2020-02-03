@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from apps.post.models import Post, Comment, UserActionTemplate, UserActionTypes, Like
+
 from apps.post.serializers import PostSerializer, CommentSerializer
 from apps.post.services.channel_posts_list import ChannelPosts
 from apps.post.services.followed_channels_posts import FollowedChannelsPosts
@@ -111,9 +112,9 @@ class LikeAPIView(GenericAPIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, action_id):
-        user_action = get_object_or_404(UserActionTemplate, id=action_id)
-        Like.objects.create(liker=request.user, target=user_action)
-        return Response(data={'details': 'You successfully liked it :)'}, status=status.HTTP_200_OK)
+        action = get_object_or_404(UserActionTemplate, id=action_id)
+        Like.objects.create(target=action, liker=request.user.profile)
+        return Response(data={'detail': 'like successfully'}, status=status.HTTP_200_OK)
 
 
 class NewPostsAPIVIew(GenericAPIView):
