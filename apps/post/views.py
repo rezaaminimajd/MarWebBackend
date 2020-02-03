@@ -7,9 +7,11 @@ from rest_framework import status
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 
+from apps.account.models import FollowChannel
 from apps.post.models import Post, Comment, UserActionTemplate, UserActionTypes, Like
 from apps.post.serializers import PostSerializer, CommentSerializer
 from apps.post.services.channel_posts_list import ChannelPosts
+from apps.post.services.followed_channels_posts import FollowedChannelsPosts
 from . import models as post_models
 from . import serializers as post_serializers
 
@@ -115,7 +117,7 @@ class NewPostsAPIVIew(GenericAPIView):
     queryset = UserActionTemplate.objects.all()
     serializer_class = post_serializers.UserActionPolymorphismSerializer
 
-    def get(self, posts_count):
+    def get(self, request, posts_count):
         posts = self.get_queryset().filter(type=UserActionTypes.POST).order_by('-create_date')[:posts_count]
         data = self.get_serializer(posts, many=True).data
         return Response(data={'posts': data}, status=status.HTTP_200_OK)
@@ -125,8 +127,18 @@ class HotPostsAPIView(GenericAPIView):
     queryset = UserActionTemplate.objects.all()
     serializer_class = post_serializers.UserActionPolymorphismSerializer
 
-    def get(self, posts_count):
+    def get(self, request, posts_count):
         posts = self.get_queryset().filter(type=UserActionTypes.POST).annotate(likes_count=Count('likes')).order_by(
             '-likes_count')[:posts_count]
+        data = self.get_serializer(posts, many=True).data
+        return Response(data={'posts': data}, status=status.HTTP_200_OK)
+
+
+class FollowedChannelsPostsAPIView(GenericAPIView):
+    queryset = UserActionTemplate.objects.all()
+    serializer_class = post_serializers.UserActionPolymorphismSerializer
+
+    def get(self, request, posts_count):
+        posts = FollowedChannelsPosts(request=request, posts_count=posts_count)()
         data = self.get_serializer(posts, many=True).data
         return Response(data={'posts': data}, status=status.HTTP_200_OK)
