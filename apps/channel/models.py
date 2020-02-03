@@ -5,10 +5,10 @@ from django.db import models
 # Create your models here.
 
 class Channel(models.Model):
-    creator = models.ForeignKey('account.Profile', related_name='channels', on_delete=models.CASCADE)
+    creator = models.ForeignKey(User, related_name='channels', on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
-    subject = models.CharField(max_length=200)
     image = models.ImageField()
+    description = models.TextField(blank=True, null=False)
     authors = models.ManyToManyField(User, related_name='author_channels')
     create_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)

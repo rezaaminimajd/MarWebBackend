@@ -1,7 +1,8 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.models import User
-from rest_framework import status
 
+from rest_framework import status
+from rest_framework import parsers
 from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
 
@@ -38,18 +39,28 @@ class ChannelsSearchListAPIView(GenericAPIView):
 
 
 class ChannelAPIView(GenericAPIView):
+    parser_classes = (parsers.MultiPartParser,)
 
     def get(self, request, channel_id):
-        pass
+        channel = get_object_or_404(channel_models.Channel, id=channel_id)
+        data = channel_serializers.ChannelSerializer(channel).data
+        return Response(data={'channel': data})
 
     def post(self, request):
-        pass
+        new_channel = channel_serializers.ChannelPostSerializer(data=request.data)
+        if new_channel.is_valid(raise_exception=True):
+            new_channel = new_channel.save()
+            return Response(data={'detail': channel_serializers.ChannelSerializer(new_channel).data},
+                            status=status.HTTP_200_OK)
 
     def put(self, request, channel_id):
-        pass
+        get_object_or_404(channel_models.Channel, id=channel_id)
+        # TODO complete this APIView
 
     def delete(self, request, channel_id):
-        pass
+        channel = get_object_or_404(channel_models.Channel, id=channel_id)
+        channel.delete()
+        return Response(data={'detail': 'Channel deleted successfully'}, status=status.HTTP_200_OK)
 
 
 class FollowAPIView(GenericAPIView):
