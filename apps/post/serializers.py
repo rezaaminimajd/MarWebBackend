@@ -65,7 +65,7 @@ class SubCommentSerializer(ModelSerializer):
 
 
 class CommentSerializer(ModelSerializer):
-    parent_comment = PrimaryKeyRelatedField()
+    parent_comment = PrimaryKeyRelatedField(read_only=True)
     replies = SubCommentSerializer(many=True)
     comment_owner = SerializerMethodField()
 
