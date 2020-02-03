@@ -46,7 +46,7 @@ class PostAPIView(GenericAPIView):
     def put(self, request, post_id):
         user: User = request.user
         post: Post = get_object_or_404(Post, id=post_id)
-        if user != post.profile.user:
+        if user != post.user:
             return Response(data={'detail': 'this post is not for this user'}, status=status.HTTP_403_FORBIDDEN)
         target_post = self.get_serializer(data=request.data)
         target_post.is_valid(raise_exception=True)
@@ -56,7 +56,7 @@ class PostAPIView(GenericAPIView):
     def delete(self, request, post_id):
         user: User = request.user
         post: Post = get_object_or_404(Post, id=post_id)
-        if user != post.profile.user:
+        if user != post.user:
             return Response(data={'detail': 'this post is not for this user'}, status=status.HTTP_403_FORBIDDEN)
         post.delete()  # todo nadombe
         return Response(data={'detail': 'post deleted successfully'}, status=status.HTTP_200_OK)
@@ -90,7 +90,7 @@ class CommentAPIView(GenericAPIView):
         user: User = request.user
         post = get_object_or_404(Post, id=post_id)
         comment = post.comments.filter(id=comment_id)
-        if user != comment.profile.user:
+        if user != comment.user:
             return Response(data={'detail': 'this post is not for this user'}, status=status.HTTP_403_FORBIDDEN)
 
         # todo update
@@ -99,7 +99,7 @@ class CommentAPIView(GenericAPIView):
         user: User = request.user
         post = get_object_or_404(Post, id=post_id)
         comment = post.comments.filter(id=comment_id)
-        if user != comment.profile.user:
+        if user != comment.user:
             return Response(data={'detail': 'this post is not for this user'}, status=status.HTTP_403_FORBIDDEN)
 
         # todo delete
