@@ -49,7 +49,7 @@ class Post(UserActionTemplate):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f'id:{self.id}, username:{self.profile.user.username}'
+        return f'id:{self.id}, username:{self.user.username}'
 
 
 class Comment(UserActionTemplate):
