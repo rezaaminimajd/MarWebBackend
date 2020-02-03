@@ -2,6 +2,8 @@ from django.shortcuts import render
 
 from rest_framework.generics import GenericAPIView
 
+from . import serializers as channel_serializers
+
 
 # Create your views here.
 
