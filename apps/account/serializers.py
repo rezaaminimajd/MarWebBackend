@@ -31,7 +31,7 @@ class UserSerializers(serializers.ModelSerializer):
         user = User.objects.create(**validated_data)
         profile = Profile.objects.create(user=user, age=age, telephone_number=telephone_number)
         ProfileToken.objects.create(profile=profile, date=datetime.now())
-        channel = Channel.objects.create(creator=user, title=user.username)
+        channel = Channel.objects.create(creator=user, title=user.username, main_channel=True)
         channel.authors.add(user)
         return user
 
