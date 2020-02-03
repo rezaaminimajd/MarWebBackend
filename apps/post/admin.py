@@ -17,7 +17,7 @@ class CommonAdminFeatures(admin.ModelAdmin):
     list_filter = ['create_date', 'update_date', 'type']
 
     def get_username(self, user_action: post_models.UserActionTemplate):
-        return user_action.profile.user.username
+        return user_action.user.username
 
     get_username.short_description = 'User username'
     get_username.admin_order_field = 'user_username'

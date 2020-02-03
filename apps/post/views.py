@@ -3,6 +3,7 @@ from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.generics import GenericAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from apps.post.models import Post, Comment, UserActionTemplate, UserActionTypes, Like
@@ -20,6 +21,7 @@ from . import serializers as post_serializers
 class ChannelPostsListAPIView(GenericAPIView):
     queryset = post_models.UserActionTemplate
     serializer_class = post_serializers.PostAsListItemSerializer
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, channel_id):
         posts, errors = ChannelPosts(channel_id=channel_id)()
@@ -30,6 +32,7 @@ class ChannelPostsListAPIView(GenericAPIView):
 
 class PostAPIView(GenericAPIView):
     serializer_class = PostSerializer
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, post_id):
         post = get_object_or_404(Post, id=post_id)
@@ -44,7 +47,7 @@ class PostAPIView(GenericAPIView):
     def put(self, request, post_id):
         user: User = request.user
         post: Post = get_object_or_404(Post, id=post_id)
-        if user != post.profile.user:
+        if user != post.user:
             return Response(data={'detail': 'this post is not for this user'}, status=status.HTTP_403_FORBIDDEN)
         target_post = self.get_serializer(data=request.data)
         target_post.is_valid(raise_exception=True)
@@ -54,13 +57,14 @@ class PostAPIView(GenericAPIView):
     def delete(self, request, post_id):
         user: User = request.user
         post: Post = get_object_or_404(Post, id=post_id)
-        if user != post.profile.user:
+        if user != post.user:
             return Response(data={'detail': 'this post is not for this user'}, status=status.HTTP_403_FORBIDDEN)
         post.delete()  # todo nadombe
         return Response(data={'detail': 'post deleted successfully'}, status=status.HTTP_200_OK)
 
 
 class CommentsListAPIView(GenericAPIView):
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, post_id):
         post: Post = get_object_or_404(Post, id=post_id)
@@ -70,6 +74,7 @@ class CommentsListAPIView(GenericAPIView):
 
 class CommentAPIView(GenericAPIView):
     serializer_class = CommentSerializer
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, post_id, comment_id):
         post = get_object_or_404(Post, id=post_id)
@@ -88,7 +93,7 @@ class CommentAPIView(GenericAPIView):
         user: User = request.user
         post = get_object_or_404(Post, id=post_id)
         comment = post.comments.filter(id=comment_id)
-        if user != comment.profile.user:
+        if user != comment.user:
             return Response(data={'detail': 'this post is not for this user'}, status=status.HTTP_403_FORBIDDEN)
 
         # todo update
@@ -97,45 +102,50 @@ class CommentAPIView(GenericAPIView):
         user: User = request.user
         post = get_object_or_404(Post, id=post_id)
         comment = post.comments.filter(id=comment_id)
-        if user != comment.profile.user:
+        if user != comment.user:
             return Response(data={'detail': 'this post is not for this user'}, status=status.HTTP_403_FORBIDDEN)
 
         # todo delete
 
 
 class LikeAPIView(GenericAPIView):
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, action_id):
         action = get_object_or_404(UserActionTemplate, id=action_id)
         Like.objects.create(target=action, liker=request.user.profile)
         return Response(data={'detail': 'like successfully'}, status=status.HTTP_200_OK)
 
+
 class NewPostsAPIVIew(GenericAPIView):
     queryset = UserActionTemplate.objects.all()
     serializer_class = post_serializers.PostAsListItemSerializer
+    permission_classes = [IsAuthenticated]
 
-    def get(self, request, posts_count):
-        posts = self.get_queryset().filter(type=UserActionTypes.POST).order_by('-create_date')[:posts_count]
+    def get(self, request):
+        posts = self.get_queryset().filter(type=UserActionTypes.POST).order_by('-create_date')
         data = self.get_serializer(posts, many=True).data
         return Response(data={'posts': data}, status=status.HTTP_200_OK)
-
 
 
 class HotPostsAPIView(GenericAPIView):
     queryset = UserActionTemplate.objects.all()
     serializer_class = post_serializers.PostAsListItemSerializer
+    permission_classes = [IsAuthenticated]
 
-    def get(self, request, posts_count):
+    def get(self, request):
         posts = self.get_queryset().filter(type=UserActionTypes.POST).annotate(likes_count=Count('likes')).order_by(
-            '-likes_count')[:posts_count]
+            '-likes_count')
         data = self.get_serializer(posts, many=True).data
         return Response(data={'posts': data}, status=status.HTTP_200_OK)
 
+
 class FollowedChannelsPostsAPIView(GenericAPIView):
     serializer_class = post_serializers.PostAsListItemSerializer
+    permission_classes = [IsAuthenticated]
 
-    def get(self, request, posts_count):
-        posts = FollowedChannelsPosts(request=request, posts_count=posts_count)()
+    def get(self, request):
+        posts = FollowedChannelsPosts(request=request)()
         data = self.get_serializer(posts, many=True).data
         return Response(data={'posts': data}, status=status.HTTP_200_OK)
 
@@ -143,10 +153,10 @@ class FollowedChannelsPostsAPIView(GenericAPIView):
 class ParticipatedPostsAPIView(GenericAPIView):
     serializer_class = post_serializers.PostAsListItemSerializer
     queryset = post_models.Comment.objects.all()
+    permission_classes = [IsAuthenticated]
 
-    def get(self, request, posts_count):
+    def get(self, request):
         posts_ids = self.get_queryset().filter(user=self.request.user).values_list('post_related_id', flat=True)
-        posts = Post.objects.filter(id__in=posts_ids)[:posts_count]
+        posts = Post.objects.filter(id__in=posts_ids)
         data = self.get_serializer(posts, many=True).data
         return Response(data={'posts': data}, status=status.HTTP_200_OK)
-

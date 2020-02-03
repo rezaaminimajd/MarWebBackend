@@ -16,14 +16,13 @@ from apps.account import models as account_models
 # Create your views here.
 
 
-class ChannelsListAPIView(GenericAPIView):
+class UserChannelsListAPIView(GenericAPIView):
     queryset = channel_models.Channel.objects.all()
     serializer_class = channel_serializers.ChannelAsListItemSerializer
 
     def get(self, request):
-        channels = channel_models.Channel.objects.all()
-        data = self.get_serializer(channels, many=True, read_only=True).data
-        print('data:', data)
+        channels = self.get_queryset().filter(creator=request.user)
+        data = self.get_serializer(channels, many=True).data
         return Response(data={'channels': data}, status=status.HTTP_200_OK)
 
 

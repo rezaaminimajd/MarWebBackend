@@ -70,7 +70,8 @@ class FollowUserView(GenericAPIView):
     def post(self, request, username):
         source: User = request.user
         target: User = get_object_or_404(User, username=username)
-        FollowUser.objects.create(source=source.profile, target=target.profile, follow_type=FollowTypes.USER)
+        FollowUser.objects.create(source=source.profile, target=target.profile)
+        FollowChannel.objects.create(source=source.profile, target=target.channels.get(main_channel=True))
         return Response(data={"detail": "follow successfully"}, status=status.HTTP_200_OK)
 
 
@@ -156,4 +157,3 @@ class IsFollowingAPIView(GenericAPIView):
         if request.user in user.profile.followers_user:
             is_following = True
         return Response(data={'is_following': is_following}, status=status.HTTP_200_OK)
-
