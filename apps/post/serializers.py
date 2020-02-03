@@ -49,7 +49,7 @@ class PostSerializer(ModelSerializer):
 class PostCreateSerializer(ModelSerializer):
     class Meta:
         model = post_models.Post
-        fields = ['title', 'user', 'channel', 'body', 'media', 'create_date', 'update_date']
+        fields = ['title', 'user', 'channel', 'body', 'media']
 
 
 class SubCommentSerializer(ModelSerializer):
