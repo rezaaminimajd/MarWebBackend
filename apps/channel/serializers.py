@@ -30,7 +30,8 @@ class ChannelAsListItemSerializer(ModelSerializer):
 
     class Meta:
         model = channel_models.Channel
-        fields = ['id', 'name', 'topics', 'creator_username', 'authors', 'followers_count', 'create_time']
+        fields = ['id', 'title', 'topics', 'creator_username', 'main_channel', 'image', 'description', 'authors',
+                  'followers_count', 'create_time', 'update_time']
 
 
 class ChannelSerializer(ModelSerializer):
