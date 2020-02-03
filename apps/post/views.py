@@ -112,7 +112,7 @@ class LikeAPIView(GenericAPIView):
 
 class NewPostsAPIVIew(GenericAPIView):
     queryset = UserActionTemplate.objects.all()
-    serializer_class = post_serializers.UserActionPolymorphismSerializer
+    serializer_class = post_serializers.PostAsListItemSerializer
 
     def get(self, request, posts_count):
         posts = self.get_queryset().filter(type=UserActionTypes.POST).order_by('-create_date')[:posts_count]
@@ -122,7 +122,7 @@ class NewPostsAPIVIew(GenericAPIView):
 
 class HotPostsAPIView(GenericAPIView):
     queryset = UserActionTemplate.objects.all()
-    serializer_class = post_serializers.UserActionPolymorphismSerializer
+    serializer_class = post_serializers.PostAsListItemSerializer
 
     def get(self, request, posts_count):
         posts = self.get_queryset().filter(type=UserActionTypes.POST).annotate(likes_count=Count('likes')).order_by(
@@ -132,7 +132,7 @@ class HotPostsAPIView(GenericAPIView):
 
 
 class FollowedChannelsPostsAPIView(GenericAPIView):
-    serializer_class = post_serializers.UserActionPolymorphismSerializer
+    serializer_class = post_serializers.PostAsListItemSerializer
 
     def get(self, request, posts_count):
         posts = FollowedChannelsPosts(request=request, posts_count=posts_count)()
@@ -141,8 +141,8 @@ class FollowedChannelsPostsAPIView(GenericAPIView):
 
 
 class ParticipatedPostsAPIView(GenericAPIView):
-    serializer_class = post_serializers.UserActionPolymorphismSerializer
-    queryset = Comment.objects.all()
+    serializer_class = post_serializers.PostAsListItemSerializer
+    queryset = post_models.Comment.objects.all()
 
     def get(self, request, posts_count):
         posts_ids = self.get_queryset().filter(user=self.request.user).values_list('post_related_id', flat=True)
