@@ -1,13 +1,10 @@
 from django.contrib.auth.models import User
-from django.core.serializers import get_serializer
-from django.shortcuts import render, get_object_or_404
 from django.db.models import Count
+from django.shortcuts import get_object_or_404
 from rest_framework import status
-
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 
-from apps.account.models import FollowChannel
 from apps.post.models import Post, Comment, UserActionTemplate, UserActionTypes, Like
 from apps.post.serializers import PostSerializer, CommentSerializer
 from apps.post.services.channel_posts_list import ChannelPosts
@@ -148,4 +145,7 @@ class ParticipatedPostsAPIView(GenericAPIView):
     queryset = Comment.objects.all()
 
     def get(self, request, posts_count):
-        posts_ids = self.get_queryset().filter(user=self.request.user).values_list('post_related')
+        posts_ids = self.get_queryset().filter(user=self.request.user).values_list('post_related_id', flat=True)
+        posts = Post.objects.filter(id__in=posts_ids)[:posts_count]
+        data = self.get_serializer(posts, many=True).data
+        return Response(data={'posts': data}, status=status.HTTP_200_OK)
