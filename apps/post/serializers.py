@@ -19,7 +19,7 @@ class PostAsListItemSerializer(ModelSerializer):
 
     class Meta:
         model = post_models.Post
-        fields = ['type', 'title', 'post_owner', 'summary', 'media', 'create_date', 'update_date']
+        fields = ['id', 'type', 'title', 'post_owner', 'summary', 'media', 'create_date', 'update_date']
 
 
 class UserActionSerializer(ModelSerializer):
@@ -31,7 +31,7 @@ class UserActionSerializer(ModelSerializer):
 
     class Meta:
         model = post_models.UserActionTemplate
-        fields = ['type', 'owner', 'body', 'media', 'create_date', 'update_date']
+        fields = ['id', 'type', 'owner', 'body', 'media', 'create_date', 'update_date']
 
 
 class PostSerializer(ModelSerializer):
@@ -43,13 +43,13 @@ class PostSerializer(ModelSerializer):
 
     class Meta:
         model = post_models.Post
-        fields = ['title', 'post_owner', 'body', 'media', 'create_date', 'update_date']
+        fields = ['id', 'title', 'post_owner', 'body', 'media', 'create_date', 'update_date']
 
 
 class PostCreateSerializer(ModelSerializer):
     class Meta:
         model = post_models.Post
-        fields = ['title', 'user', 'channel', 'body', 'media', 'create_date', 'update_date']
+        fields = ['id', 'title', 'user', 'channel', 'body', 'media', 'create_date', 'update_date']
 
 
 class SubCommentSerializer(ModelSerializer):
@@ -61,7 +61,7 @@ class SubCommentSerializer(ModelSerializer):
 
     class Meta:
         model = post_models.Comment
-        fields = ['post_related_id', 'title', 'comment_owner', 'body', 'media', 'create_date', 'update_date']
+        fields = ['id', 'post_related_id', 'title', 'comment_owner', 'body', 'media', 'create_date', 'update_date']
 
 
 class CommentSerializer(ModelSerializer):
@@ -75,7 +75,7 @@ class CommentSerializer(ModelSerializer):
 
     class Meta:
         model = post_models.Comment
-        fields = ['parent_comment', 'post_related_id', 'title', 'comment_owner', 'body', 'media', 'create_date',
+        fields = ['id', 'parent_comment', 'post_related_id', 'title', 'comment_owner', 'body', 'media', 'create_date',
                   'update_date', 'replies']
 
 
