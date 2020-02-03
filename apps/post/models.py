@@ -69,4 +69,4 @@ class Comment(UserActionTemplate):
 
 class Like(models.Model):
     target = models.ForeignKey('post.UserActionTemplate', related_name='likes', on_delete=models.CASCADE)
-    liker = models.ForeignKey('account.Profile', related_name='likes', on_delete=models.CASCADE)
+    liker = models.ForeignKey(User, related_name='likes', on_delete=models.CASCADE)
