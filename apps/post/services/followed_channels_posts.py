@@ -16,7 +16,7 @@ class FollowedChannelsPosts:
     def __call__(self):
         self._set_followed_channels()
         self._set_posts()
-        return self.posts
+        return self.posts[:self.posts_count]
 
     def _set_followed_channels(self):
         self.followed_channels = FollowChannel.objects.filter(

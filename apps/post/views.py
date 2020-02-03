@@ -135,10 +135,17 @@ class HotPostsAPIView(GenericAPIView):
 
 
 class FollowedChannelsPostsAPIView(GenericAPIView):
-    queryset = UserActionTemplate.objects.all()
     serializer_class = post_serializers.UserActionPolymorphismSerializer
 
     def get(self, request, posts_count):
         posts = FollowedChannelsPosts(request=request, posts_count=posts_count)()
         data = self.get_serializer(posts, many=True).data
         return Response(data={'posts': data}, status=status.HTTP_200_OK)
+
+
+class ParticipatedPostsAPIView(GenericAPIView):
+    serializer_class = post_serializers.UserActionPolymorphismSerializer
+    queryset = Comment.objects.all()
+
+    def get(self, request, posts_count):
+        posts_ids = self.get_queryset().filter(user=self.request.user).values_list('post_related')
