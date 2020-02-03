@@ -1,3 +1,4 @@
+from rest_framework import serializers
 from rest_framework.relations import PrimaryKeyRelatedField
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from rest_polymorphic.serializers import PolymorphicSerializer
@@ -47,6 +48,8 @@ class PostSerializer(ModelSerializer):
 
 
 class PostCreateSerializer(ModelSerializer):
+    media = serializers.FileField(required=False)
+
     class Meta:
         model = post_models.Post
         fields = ['title', 'user', 'channel', 'body', 'media']
