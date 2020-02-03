@@ -78,7 +78,6 @@ class FollowChannelSerializers(serializers.ModelSerializer):
     target_name = SerializerMethodField('_target_name')
     source_name = SerializerMethodField('_source_name')
 
-
     @staticmethod
     def _source_name(follow: Follow):
         return follow.source.user.username
@@ -98,3 +97,21 @@ class PolymorphicFollowSerializers(PolymorphicSerializer):
         FollowUser: FollowUserSerializers,
         FollowChannel: FollowChannelSerializers,
     }
+
+
+class ForgotPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+
+class ForgotPasswordConfirmSerializer(serializers.ModelSerializer):
+    new_password1 = serializers.CharField(max_length=100)
+    new_password2 = serializers.CharField(max_length=100)
+
+    class Meta:
+        model = ForgotPasswordToken
+        fields = ['new_password1', 'new_password2', 'uid', 'token']
+
+    def validate(self, data):
+        if data['new_password1'] != data['new_password2']:
+            raise serializers.ValidationError('passwords don\'t match!')
+        return data

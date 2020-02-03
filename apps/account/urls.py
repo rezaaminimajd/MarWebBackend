@@ -15,5 +15,7 @@ urlpatterns = [
     path('follow/<slug:username>', views.FollowUserView.as_view()),
     path('reset_password', views.ResetPasswordView.as_view()),
     path('followers/<slug:username>', views.GetFollowersView.as_view()),
+    path('password/reset', views.ForgotPasswordView.as_view()),
+    path('password/reset/confirm', views.ForgotPasswordConfirmView.as_view()),
 
 ]
