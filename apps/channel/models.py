@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 
 
@@ -5,8 +6,10 @@ from django.db import models
 
 class Channel(models.Model):
     creator = models.ForeignKey('account.Profile', related_name='channels', on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
-    authors = models.ManyToManyField('account.Profile', related_name='author_channels')
+    title = models.CharField(max_length=100)
+    subject = models.CharField(max_length=200)
+    image = models.ImageField()
+    authors = models.ManyToManyField(User, related_name='author_channels')
     create_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
 
