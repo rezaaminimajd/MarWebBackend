@@ -110,7 +110,7 @@ class LikeAPIView(GenericAPIView):
 
 
 class NewPostsAPIVIew(GenericAPIView):
-    pass
+    pass  # todo bazen bazen bega hade
 
 
 class HotPostsAPIView(GenericAPIView):
