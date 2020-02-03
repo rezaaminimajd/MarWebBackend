@@ -15,7 +15,7 @@ class PostAsListItemSerializer(ModelSerializer):
 
     @staticmethod
     def _post_owner(post: post_models.Post):
-        return post.profile.user.username
+        return post.user.username
 
     class Meta:
         model = post_models.Post
@@ -27,7 +27,7 @@ class UserActionSerializer(ModelSerializer):
 
     @staticmethod
     def _owner(action: post_models.UserActionTemplate):
-        return action.profile.user.username
+        return action.user.username
 
     class Meta:
         model = post_models.UserActionTemplate
@@ -57,7 +57,7 @@ class SubCommentSerializer(ModelSerializer):
 
     @staticmethod
     def _comment_owner(comment: post_models.Comment):
-        return comment.profile.user.username
+        return comment.user.username
 
     class Meta:
         model = post_models.Comment
@@ -71,7 +71,7 @@ class CommentSerializer(ModelSerializer):
 
     @staticmethod
     def _comment_owner(comment: post_models.Comment):
-        return comment.profile.user.username
+        return comment.user.username
 
     class Meta:
         model = post_models.Comment
