@@ -34,7 +34,7 @@ class ChannelPostsListAPIView(GenericAPIView):
 class PostAPIView(GenericAPIView):
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticated]
-    parser_classes = (parsers.MultiPartParser, parsers.FormParser)
+    parser_classes = (parsers.MultiPartParser,)
 
     def get(self, request, post_id):
         post = get_object_or_404(Post, id=post_id)
