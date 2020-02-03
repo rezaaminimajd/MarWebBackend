@@ -11,7 +11,7 @@ class UserSerializers(serializers.ModelSerializer):
     email = serializers.EmailField(validators=[UniqueValidator(queryset=User.objects.all())])
     repeat_password = serializers.CharField(max_length=100, required=False)
     age = serializers.IntegerField(required=False)
-    telephone_number = PhoneNumberField(required=False)
+    telephone_number = serializers.CharField(required=False)
 
     class Meta:
         model = User
