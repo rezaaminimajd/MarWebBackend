@@ -19,7 +19,7 @@ class PostAsListItemSerializer(ModelSerializer):
 
     class Meta:
         model = post_models.Post
-        fields = ['type', 'title', 'post_owner', 'summary', 'media', 'create_date', 'update_date']
+        fields = ['id', 'type', 'title', 'post_owner', 'summary', 'media', 'create_date', 'update_date']
 
 
 class UserActionSerializer(ModelSerializer):
@@ -31,19 +31,25 @@ class UserActionSerializer(ModelSerializer):
 
     class Meta:
         model = post_models.UserActionTemplate
-        fields = ['type', 'owner', 'body', 'media', 'create_date', 'update_date']
+        fields = ['id', 'type', 'owner', 'body', 'media', 'create_date', 'update_date']
 
 
 class PostSerializer(ModelSerializer):
-    post_owner = SerializerMethodField('_post_owner')
+    post_owner = SerializerMethodField('_post_owner', read_only=True)
 
     @staticmethod
     def _post_owner(post: post_models.Post):
-        return post.profile.user.username
+        return post.user.username
 
     class Meta:
         model = post_models.Post
-        fields = ['type', 'title', 'post_owner', 'body', 'media', 'create_date', 'update_date']
+        fields = ['id', 'title', 'post_owner', 'body', 'media', 'create_date', 'update_date']
+
+
+class PostCreateSerializer(ModelSerializer):
+    class Meta:
+        model = post_models.Post
+        fields = ['id', 'title', 'user', 'channel', 'body', 'media', 'create_date', 'update_date']
 
 
 class SubCommentSerializer(ModelSerializer):
@@ -55,12 +61,12 @@ class SubCommentSerializer(ModelSerializer):
 
     class Meta:
         model = post_models.Comment
-        fields = ['type', 'post_related_id', 'title', 'comment_owner', 'body', 'media', 'create_date', 'update_date']
+        fields = ['id', 'post_related_id', 'title', 'comment_owner', 'body', 'media', 'create_date', 'update_date']
 
 
 class CommentSerializer(ModelSerializer):
-    parent_comment = PrimaryKeyRelatedField()
-    replies = SubCommentSerializer()
+    parent_comment = PrimaryKeyRelatedField(read_only=True)
+    replies = SubCommentSerializer(many=True)
     comment_owner = SerializerMethodField()
 
     @staticmethod
@@ -69,7 +75,7 @@ class CommentSerializer(ModelSerializer):
 
     class Meta:
         model = post_models.Comment
-        fields = ['type', 'parent_comment', 'post_related_id', 'title', 'comment_owner', 'body', 'media', 'create_date',
+        fields = ['id', 'parent_comment', 'post_related_id', 'title', 'comment_owner', 'body', 'media', 'create_date',
                   'update_date', 'replies']
 
 

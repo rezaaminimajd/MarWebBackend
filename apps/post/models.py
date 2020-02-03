@@ -1,5 +1,6 @@
 import os
 
+from django.contrib.auth.models import User
 from django.db import models
 
 from polymorphic.models import PolymorphicModel
@@ -17,14 +18,14 @@ class UserActionTypes:
 
 
 class UserActionTemplate(PolymorphicModel):
-    profile = models.ForeignKey('account.Profile', related_name='actions', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='actions', on_delete=models.CASCADE)
     body = models.TextField()
     type = models.CharField(max_length=20, choices=UserActionTypes.TYPES)
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(auto_now=True)
 
     def upload_path(self, filename):
-        return os.path.join('private/', self.profile.user.username, 'actions', self.type, str(self.id), filename)
+        return os.path.join('private/', self.user.username, 'actions', self.type, str(self.id), filename)
 
     media = models.FileField(upload_to=upload_path)
 
@@ -33,7 +34,7 @@ class UserActionTemplate(PolymorphicModel):
         return self.body[:len(self.body) // 4]
 
     def __str__(self):
-        return f'id:{self.id}, username:{self.profile.user.username}'
+        return f'id:{self.id}, username:{self.user.username}'
 
 
 class Post(UserActionTemplate):
