@@ -18,7 +18,7 @@ class ChannelAsListItemSerializer(ModelSerializer):
 
     @staticmethod
     def _creator_username(channel: channel_models.Channel):
-        return channel.creator.user.username
+        return channel.creator.username
 
     @staticmethod
     def _authors(channel: channel_models.Channel):
@@ -30,7 +30,7 @@ class ChannelAsListItemSerializer(ModelSerializer):
 
     class Meta:
         model = channel_models.Channel
-        fields = ['name', 'topics', 'creator_username', 'authors', 'followers_count', 'create_time']
+        fields = ['id', 'name', 'topics', 'creator_username', 'authors', 'followers_count', 'create_time']
 
 
 class ChannelSerializer(ModelSerializer):
@@ -54,7 +54,8 @@ class ChannelSerializer(ModelSerializer):
 
     class Meta:
         model = channel_models.Channel
-        fields = ['title', 'topics', 'description', 'creator_username', 'authors', 'followers_count', 'create_time',
+        fields = ['id', 'title', 'topics', 'description', 'creator_username', 'authors', 'followers_count',
+                  'create_time',
                   'update_time',
                   'posts', 'image']
 
@@ -65,4 +66,4 @@ class ChannelPostSerializer(ModelSerializer):
 
     class Meta:
         model = channel_models
-        fields = ['creator', 'title', 'topics', 'image', 'authors', 'description']
+        fields = ['id', 'creator', 'title', 'topics', 'image', 'authors', 'description']
