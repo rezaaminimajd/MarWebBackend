@@ -1,14 +1,17 @@
 from django.contrib.auth.models import User
 from django.core.serializers import get_serializer
 from django.shortcuts import render, get_object_or_404
+from django.db.models import Count
 from rest_framework import status
 
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 
-from apps.post.models import Post, Comment
+from apps.account.models import FollowChannel
+from apps.post.models import Post, Comment, UserActionTemplate, UserActionTypes, Like
 from apps.post.serializers import PostSerializer, CommentSerializer
 from apps.post.services.channel_posts_list import ChannelPosts
+from apps.post.services.followed_channels_posts import FollowedChannelsPosts
 from . import models as post_models
 from . import serializers as post_serializers
 
@@ -72,9 +75,9 @@ class CommentAPIView(GenericAPIView):
 
     def get(self, request, post_id, comment_id):
         post = get_object_or_404(Post, id=post_id)
-        comment = post.comments.filter(id=comment_id)
-        # if comment not exist response error
-        return Response(data={'comment': comment}, status=status.HTTP_200_OK)
+        comment = get_object_or_404(Comment, post=post, id=comment_id)
+        data = self.get_serializer(comment).data
+        return Response(data={'comment': data}, status=status.HTTP_200_OK)
 
     def post(self, request, post_id):
         get_object_or_404(Post, id=post_id)
@@ -105,17 +108,44 @@ class CommentAPIView(GenericAPIView):
 class LikeAPIView(GenericAPIView):
 
     def post(self, request, action_id):
-        pass
+        user_action = get_object_or_404(UserActionTemplate, id=action_id)
+        Like.objects.create(liker=request.user, target=user_action)
+        return Response(data={'details': 'You successfully liked it :)'}, status=status.HTTP_200_OK)
 
 
 class NewPostsAPIVIew(GenericAPIView):
-    pass
+    queryset = UserActionTemplate.objects.all()
+    serializer_class = post_serializers.UserActionPolymorphismSerializer
+
+    def get(self, request, posts_count):
+        posts = self.get_queryset().filter(type=UserActionTypes.POST).order_by('-create_date')[:posts_count]
+        data = self.get_serializer(posts, many=True).data
+        return Response(data={'posts': data}, status=status.HTTP_200_OK)
 
 
 class HotPostsAPIView(GenericAPIView):
-    queryset = Post.objects.all()
+    queryset = UserActionTemplate.objects.all()
+    serializer_class = post_serializers.UserActionPolymorphismSerializer
 
-    def get(self):
-        pass  # todo bazen bazen bega hade
+    def get(self, request, posts_count):
+        posts = self.get_queryset().filter(type=UserActionTypes.POST).annotate(likes_count=Count('likes')).order_by(
+            '-likes_count')[:posts_count]
+        data = self.get_serializer(posts, many=True).data
+        return Response(data={'posts': data}, status=status.HTTP_200_OK)
 
 
+class FollowedChannelsPostsAPIView(GenericAPIView):
+    serializer_class = post_serializers.UserActionPolymorphismSerializer
+
+    def get(self, request, posts_count):
+        posts = FollowedChannelsPosts(request=request, posts_count=posts_count)()
+        data = self.get_serializer(posts, many=True).data
+        return Response(data={'posts': data}, status=status.HTTP_200_OK)
+
+
+class ParticipatedPostsAPIView(GenericAPIView):
+    serializer_class = post_serializers.UserActionPolymorphismSerializer
+    queryset = Comment.objects.all()
+
+    def get(self, request, posts_count):
+        posts_ids = self.get_queryset().filter(user=self.request.user).values_list('post_related')
