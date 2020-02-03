@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework import parsers
 
 from apps.post.models import Post, Comment, UserActionTemplate, UserActionTypes, Like
 
@@ -33,6 +34,7 @@ class ChannelPostsListAPIView(GenericAPIView):
 class PostAPIView(GenericAPIView):
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticated]
+    parser_classes = (parsers.MultiPartParser, parsers.FormParser)
 
     def get(self, request, post_id):
         post = get_object_or_404(Post, id=post_id)
