@@ -1,7 +1,8 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.models import User
-from rest_framework import status
 
+from rest_framework import status
+from rest_framework import parsers
 from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
 
@@ -38,12 +39,17 @@ class ChannelsSearchListAPIView(GenericAPIView):
 
 
 class ChannelAPIView(GenericAPIView):
+    parser_classes = (parsers.MultiPartParser,)
 
     def get(self, request, channel_id):
         pass
 
     def post(self, request):
-        pass
+        new_channel = channel_serializers.ChannelPostSerializer(data=request.data)
+        if new_channel.is_valid(raise_exception=True):
+            new_channel = new_channel.save()
+            return Response(data={'detail': channel_serializers.ChannelSerializer(new_channel).data},
+                            status=status.HTTP_200_OK)
 
     def put(self, request, channel_id):
         pass
