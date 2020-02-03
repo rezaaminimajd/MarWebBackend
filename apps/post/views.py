@@ -6,8 +6,6 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from apps.post.models import Post, Comment, UserActionTemplate, Like
-
 from apps.post.models import Post, Comment, UserActionTemplate, UserActionTypes, Like
 
 from apps.post.serializers import PostSerializer, CommentSerializer
@@ -114,7 +112,6 @@ class LikeAPIView(GenericAPIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, action_id):
-
         action = get_object_or_404(UserActionTemplate, id=action_id)
         Like.objects.create(target=action, liker=request.user.profile)
         return Response(data={'detail': 'like successfully'}, status=status.HTTP_200_OK)
@@ -131,7 +128,6 @@ class NewPostsAPIVIew(GenericAPIView):
         return Response(data={'posts': data}, status=status.HTTP_200_OK)
 
 
-
 class HotPostsAPIView(GenericAPIView):
     queryset = UserActionTemplate.objects.all()
     serializer_class = post_serializers.PostAsListItemSerializer
@@ -143,9 +139,6 @@ class HotPostsAPIView(GenericAPIView):
         data = self.get_serializer(posts, many=True).data
         return Response(data={'posts': data}, status=status.HTTP_200_OK)
 
-
-    def get(self):
-        pass  # todo bazen bazen bega hade
 
 class FollowedChannelsPostsAPIView(GenericAPIView):
     serializer_class = post_serializers.PostAsListItemSerializer
@@ -167,4 +160,3 @@ class ParticipatedPostsAPIView(GenericAPIView):
         posts = Post.objects.filter(id__in=posts_ids)
         data = self.get_serializer(posts, many=True).data
         return Response(data={'posts': data}, status=status.HTTP_200_OK)
-
