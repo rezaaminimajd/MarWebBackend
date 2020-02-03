@@ -126,8 +126,8 @@ class NewPostsAPIVIew(GenericAPIView):
     queryset = UserActionTemplate.objects.all()
     serializer_class = post_serializers.PostAsListItemSerializer
 
-    def get(self, request, posts_count):
-        posts = self.get_queryset().filter(type=UserActionTypes.POST).order_by('-create_date')[:posts_count]
+    def get(self, request):
+        posts = self.get_queryset().filter(type=UserActionTypes.POST).order_by('-create_date')
         data = self.get_serializer(posts, many=True).data
         return Response(data={'posts': data}, status=status.HTTP_200_OK)
 
@@ -137,9 +137,9 @@ class HotPostsAPIView(GenericAPIView):
     queryset = UserActionTemplate.objects.all()
     serializer_class = post_serializers.PostAsListItemSerializer
 
-    def get(self, request, posts_count):
+    def get(self, request):
         posts = self.get_queryset().filter(type=UserActionTypes.POST).annotate(likes_count=Count('likes')).order_by(
-            '-likes_count')[:posts_count]
+            '-likes_count')
         data = self.get_serializer(posts, many=True).data
         return Response(data={'posts': data}, status=status.HTTP_200_OK)
 
@@ -150,8 +150,8 @@ class HotPostsAPIView(GenericAPIView):
 class FollowedChannelsPostsAPIView(GenericAPIView):
     serializer_class = post_serializers.PostAsListItemSerializer
 
-    def get(self, request, posts_count):
-        posts = FollowedChannelsPosts(request=request, posts_count=posts_count)()
+    def get(self, request):
+        posts = FollowedChannelsPosts(request=request)()
         data = self.get_serializer(posts, many=True).data
         return Response(data={'posts': data}, status=status.HTTP_200_OK)
 
@@ -160,9 +160,9 @@ class ParticipatedPostsAPIView(GenericAPIView):
     serializer_class = post_serializers.PostAsListItemSerializer
     queryset = post_models.Comment.objects.all()
 
-    def get(self, request, posts_count):
+    def get(self, request):
         posts_ids = self.get_queryset().filter(user=self.request.user).values_list('post_related_id', flat=True)
-        posts = Post.objects.filter(id__in=posts_ids)[:posts_count]
+        posts = Post.objects.filter(id__in=posts_ids)
         data = self.get_serializer(posts, many=True).data
         return Response(data={'posts': data}, status=status.HTTP_200_OK)
 
