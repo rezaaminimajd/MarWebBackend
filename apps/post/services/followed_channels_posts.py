@@ -6,9 +6,8 @@ from apps.channel.models import Channel
 
 class FollowedChannelsPosts:
 
-    def __init__(self, request, posts_count):
+    def __init__(self, request):
         self.request = request
-        self.posts_count = posts_count
         self.followed_channels: Union[List[Channel], None] = None
         self.posts = []
         pass
@@ -16,7 +15,7 @@ class FollowedChannelsPosts:
     def __call__(self):
         self._set_followed_channels()
         self._set_posts()
-        return self.posts[:self.posts_count]
+        return self.posts
 
     def _set_followed_channels(self):
         self.followed_channels = FollowChannel.objects.filter(
