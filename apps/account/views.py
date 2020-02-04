@@ -154,6 +154,6 @@ class IsFollowingAPIView(GenericAPIView):
     def post(self, request, username):
         user: User = get_object_or_404(User, username=username)
         is_following = False
-        if request.user in user.profile.followers_user:
+        if request.user in user.followers_user:
             is_following = True
         return Response(data={'is_following': is_following}, status=status.HTTP_200_OK)

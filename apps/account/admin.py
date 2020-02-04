@@ -1,5 +1,5 @@
 from django.contrib import admin
-from polymorphic.admin import PolymorphicParentModelAdmin
+from polymorphic.admin import PolymorphicParentModelAdmin, PolymorphicChildModelAdmin
 
 from apps.account.models import *
 from apps.post.admin import CommonAdminFeatures
@@ -33,20 +33,22 @@ class ProfileAdmin(admin.ModelAdmin):
     get_email.admin_order_field = 'Email'
 
 
+@admin.register(Follow)
+class FollowAdmin(PolymorphicParentModelAdmin):
+    base_model = Follow
+    child_models = [FollowUser, FollowChannel]
+
+    def has_add_permission(self, request):
+        return False
+
+
 @admin.register(FollowUser)
-class FollowAdmin(admin.ModelAdmin):
-    search_fields = [
-        'target',
-        'source',
-    ]
-    list_display = [
-        'id',
-        'target',
-        'source',
-    ]
-    list_display_links = ['id']
+class FollowUserAdmin(PolymorphicChildModelAdmin):
+    base_model = Follow
+    show_in_index = True
 
-    def get_target(self, follow: FollowUser):
-        return follow.source
 
-    get_target.short_description = 'source'
+@admin.register(FollowChannel)
+class FollowChannelAdmin(PolymorphicChildModelAdmin):
+    base_model = Follow
+    show_in_index = True
