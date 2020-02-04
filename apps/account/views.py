@@ -82,6 +82,8 @@ class FollowUserView(GenericAPIView):
     def post(self, request, username):
         source: User = request.user
         target: User = get_object_or_404(User, username=username)
+        if FollowUser.objects.filter(source=source, target=target).exists():
+            return Response(data={"detail": "Already Followed"}, status=status.HTTP_200_OK)
         FollowUser.objects.create(source=source, target=target)
         FollowChannel.objects.create(source=source, target=target.channels.get(main_channel=True))
         return Response(data={"detail": "follow successfully"}, status=status.HTTP_200_OK)

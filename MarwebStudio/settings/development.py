@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     'notify',
     'rest_framework.authtoken',
     'corsheaders',
-    'fcm_django'
 
 ]
 
@@ -146,9 +145,6 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 100,
 }
 
-
 FCM_DJANGO_SETTINGS = {
-        "FCM_SERVER_KEY": ""
+    "FCM_SERVER_KEY": ""
 }
-
-
