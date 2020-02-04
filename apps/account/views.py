@@ -64,6 +64,18 @@ class ProfileView(GenericAPIView):
     def put(self, request):
         pass
 
+class ProfileByIdView(GenericAPIView):
+    serializer_class = ProfileSerializers
+
+    def get(self, request, user_id):
+        user = get_object_or_404(User, id=user_id)
+        profile = user.profile
+        data = self.get_serializer(profile).data
+        return Response(data=data, status=status.HTTP_200_OK)
+
+    def put(self, request):
+        pass
+
 
 class FollowUserView(GenericAPIView):
 
