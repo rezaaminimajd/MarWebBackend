@@ -89,8 +89,9 @@ class FollowUserView(GenericAPIView):
         return Response(data={"detail": "follow successfully"}, status=status.HTTP_200_OK)
 
     def delete(self, request, username):
-        deleted, _ = FollowUser.objects.filter(source=request.user, target__username=username).delete()
-        User.objects.filter(username=username).channels.filter(main_channel=True).delete()
+        target = get_object_or_404(User, username=username)
+        deleted, _ = FollowUser.objects.filter(source=request.user, target=target).delete()
+        target.channels.filter(main_channel=True).delete()
         if deleted:
             return Response(data={'detail': 'You Successfully unFollowed this user'}, status=status.HTTP_200_OK)
         return Response(data={'errors': 'Unexpected error occurred!'}, status=status.HTTP_406_NOT_ACCEPTABLE)
