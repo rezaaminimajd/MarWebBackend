@@ -3,14 +3,13 @@ from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.generics import GenericAPIView
-from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import parsers
 
 from apps.post.models import Post, Comment, UserActionTemplate, UserActionTypes, Like
 
-from apps.post.serializers import PostSerializer, CommentSerializer, PostCreateSerializer
+from apps.post.serializers import PostSerializer, CommentSerializer
 from apps.post.services.channel_posts_list import ChannelPosts
 from apps.post.services.followed_channels_posts import FollowedChannelsPosts
 from . import models as post_models
@@ -30,12 +29,6 @@ class ChannelPostsListAPIView(GenericAPIView):
         if errors:
             return Response(data={'errors': errors}, status=status.HTTP_404_NOT_FOUND)
         return Response(data={'posts': posts}, status=status.HTTP_200_OK)
-
-
-class NewPostView(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
-    queryset = Post.objects.none()
-    serializer_class = PostCreateSerializer
 
 
 class PostAPIView(GenericAPIView):
