@@ -13,9 +13,10 @@ urlpatterns = [
     path('logout', views.LogoutView.as_view(), name='logout'),
     path('profile/<username>', views.ProfileView.as_view()),
     path('profile/id/<int:user_id>', views.ProfileByIdView.as_view()),
-    path('followings/<username>', views.FollowUserView.as_view()),
+    path('follow/<username>', views.FollowUserView.as_view()),
     path('reset_password', views.ResetPasswordView.as_view()),
     path('followers/<username>', views.FollowersView.as_view()),
+    path('followings/<username>', views.FollowingsView.as_view()),
     path('password/reset', views.ForgotPasswordView.as_view()),
     path('password/reset/confirm', views.ForgotPasswordConfirmView.as_view()),
 
