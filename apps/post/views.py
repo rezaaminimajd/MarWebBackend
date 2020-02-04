@@ -169,5 +169,5 @@ class UserPostsListAPIView(GenericAPIView):
     queryset = post_models.Post.objects.all()
 
     def get(self, request, username):
-        data = self.get_serializer(self.get_queryset().filter(user__username=username))
+        data = self.get_serializer(self.get_queryset().filter(user__username=username), many=True).data
         return Response(data={'posts': data}, status=status.HTTP_200_OK)
