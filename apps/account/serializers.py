@@ -88,7 +88,7 @@ class FollowChannelSerializers(serializers.ModelSerializer):
 
     @staticmethod
     def _target_name(follow: FollowUser):
-        return follow.target.username
+        return follow.target.title
 
     class Meta:
         model = FollowChannel
