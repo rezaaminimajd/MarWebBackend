@@ -64,6 +64,7 @@ class ProfileView(GenericAPIView):
     def put(self, request):
         pass
 
+
 class ProfileByIdView(GenericAPIView):
     serializer_class = ProfileSerializers
 
@@ -87,12 +88,12 @@ class FollowUserView(GenericAPIView):
         return Response(data={"detail": "follow successfully"}, status=status.HTTP_200_OK)
 
 
-class GetFollowersView(GenericAPIView):
+class FollowersView(GenericAPIView):
     serializer_class = PolymorphicFollowSerializers
 
     def get(self, request, username):
         user = get_object_or_404(User, username=username)
-        followers = user.profile.followers_user.all()
+        followers = user.followers_user.all()
         data = self.get_serializer(followers, many=True).data
         print('data:', data)
         return Response(data={'followers': data}, status=status.HTTP_200_OK)
@@ -103,7 +104,7 @@ class GetFollowingView(GenericAPIView):
 
     def get(self, request, username):
         user = get_object_or_404(User, username=username)
-        following = user.profile.followings.all()
+        following = user.followings.all()
         data = self.get_serializer(following, many=True).data
         return Response(data={'followings': data}, status=status.HTTP_200_OK)
 
