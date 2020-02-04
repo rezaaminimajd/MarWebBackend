@@ -18,7 +18,7 @@ class FollowTypes:
 class Profile(models.Model):
     user = models.OneToOneField(User, related_name='profile', on_delete=models.CASCADE)
     age = models.IntegerField()
-    telephone_number = PhoneNumberField(unique=True)
+    telephone_number = models.CharField(max_length=50, unique=True)
     image = models.ImageField(null=True, blank=True)
 
 
