@@ -20,8 +20,8 @@ class UserChannelsListAPIView(GenericAPIView):
     queryset = channel_models.Channel.objects.all()
     serializer_class = channel_serializers.ChannelAsListItemSerializer
 
-    def get(self, request):
-        channels = self.get_queryset().filter(creator=request.user)
+    def get(self, request, username):
+        channels = self.get_queryset().filter(creator__username=username)
         data = self.get_serializer(channels, many=True).data
         return Response(data={'channels': data}, status=status.HTTP_200_OK)
 
