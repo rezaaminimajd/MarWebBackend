@@ -162,3 +162,14 @@ class ParticipatedPostsAPIView(GenericAPIView):
         posts = Post.objects.filter(id__in=posts_ids)
         data = self.get_serializer(posts, many=True).data
         return Response(data={'posts': data}, status=status.HTTP_200_OK)
+
+
+class UserPostsListAPIView(GenericAPIView):
+    serializer_class = post_serializers.PostAsListItemSerializer
+    queryset = post_models.Post.objects.all()
+
+    def get(self, request, username):
+        data = self.get_serializer(self.get_queryset().filter(user__username=username))
+        return Response(data={'posts': data}, status=status.HTTP_200_OK)
+
+
