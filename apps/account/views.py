@@ -1,15 +1,15 @@
 import secrets
 
+from django.contrib.auth.hashers import check_password
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from rest_framework import status
+from rest_framework import permissions
 from rest_framework.generics import GenericAPIView, get_object_or_404
-from rest_framework import status, permissions
 from rest_framework.response import Response
-from django.contrib.auth.hashers import check_password
+
 from .serializers import *
 
 
@@ -167,13 +167,3 @@ class ForgotPasswordConfirmView(GenericAPIView):
         user.password = make_password(data['new_password1'])
         user.save()
         return Response({'detail': 'Successfully Changed Password'}, status=200)
-
-
-class IsFollowingAPIView(GenericAPIView):
-
-    def post(self, request, username):
-        user: User = get_object_or_404(User, username=username)
-        is_following = False
-        if request.user in user.followers_user:
-            is_following = True
-        return Response(data={'is_following': is_following}, status=status.HTTP_200_OK)
