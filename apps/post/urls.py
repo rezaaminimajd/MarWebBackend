@@ -1,6 +1,7 @@
 from django.urls import path
 from rest_framework import routers
 from . import views
+
 router = routers.DefaultRouter()
 router.register('ez', views.NewPostView, basename='ez')
 
@@ -14,4 +15,4 @@ urlpatterns = [
     path('posts/participated-posts', views.ParticipatedPostsAPIView.as_view(), name='participated_posts'),
     path('post-view',views.PostAPIView.as_view(),name='post'),
     path('userposts/<slug:username>',views.UserPostsListAPIView.as_view(),name='user_posts'),
-]
+] + router.urls
