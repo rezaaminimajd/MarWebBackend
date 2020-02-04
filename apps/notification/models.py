@@ -26,7 +26,7 @@ class Notification(models.Model):
     to_user = models.ForeignKey(User, related_name='received_notifications', on_delete=None)
     message = models.CharField(max_length=200, null=True, blank=True)
     target_id = models.IntegerField()
-    type = models.CharField(choices=NotificationTypes.TYPES, max_length=10)
+    type = models.CharField(choices=NotificationTypes.TYPES, max_length=20)
 
     def pre_save(self):
         if self.type == NotificationTypes.FOLLOW_USER:
