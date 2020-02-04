@@ -67,13 +67,13 @@ class FollowAPIView(GenericAPIView):
     def post(self, request, channel_id):
         source: User = request.user
         target: Channel = get_object_or_404(channel_models.Channel, id=channel_id)
-        follow_model = account_models.Follow.objects.create(source=source.profile, target=target,
-                                                            follow_type=FollowTypes.CHANNEL)
-        follow_model.save()
-        return Response(status=status.HTTP_200_OK)
+        if account_models.FollowChannel.objects.filter(source=source, target=target).exists():
+            return Response(data={'detail': 'Already followed'}, status=status.HTTP_200_OK)
+        account_models.FollowChannel.objects.create(source=source, target=target)
+        return Response(data={'detail': 'followed successfully'}, status=status.HTTP_200_OK)
 
     def delete(self, request, channel_id):
-        source: User = request.user
-        target: Channel = get_object_or_404(channel_models.Channel, id=channel_id)
-        account_models.FollowChannel.objects.filter(source=source.profile).filter(target=target).delete()
-        return Response(status=status.HTTP_200_OK)
+        deleted, _ = account_models.FollowChannel.objects.filter(source=request.user, target__id=channel_id).delete()
+        if deleted:
+            return Response(data={'detail': 'You Successfully unFollowed this channel'}, status=status.HTTP_200_OK)
+        return Response(data={'errors': 'Unexpected error occurred'}, status=status.HTTP_200_OK)

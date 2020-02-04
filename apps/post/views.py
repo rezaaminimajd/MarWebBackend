@@ -44,7 +44,7 @@ class PostAPIView(GenericAPIView):
         post = post_serializers.PostCreateSerializer(data=request.data)
         post.is_valid(raise_exception=True)
         post.save()
-        return Response(data={'detail': 'post has been registered'}, status=status.HTTP_200_OK)
+        return Response(data={'detail': 'Post has been submitted'}, status=status.HTTP_200_OK)
 
     def put(self, request, post_id):
         user: User = request.user
@@ -171,5 +171,3 @@ class UserPostsListAPIView(GenericAPIView):
     def get(self, request, username):
         data = self.get_serializer(self.get_queryset().filter(user__username=username))
         return Response(data={'posts': data}, status=status.HTTP_200_OK)
-
-
