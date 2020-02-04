@@ -41,14 +41,20 @@ class FollowAdmin(PolymorphicParentModelAdmin):
     def has_add_permission(self, request):
         return False
 
+    readonly_fields = ['follow_type']
+
 
 @admin.register(FollowUser)
 class FollowUserAdmin(PolymorphicChildModelAdmin):
     base_model = Follow
     show_in_index = True
 
+    readonly_fields = ['follow_type']
+
 
 @admin.register(FollowChannel)
 class FollowChannelAdmin(PolymorphicChildModelAdmin):
     base_model = Follow
     show_in_index = True
+
+    readonly_fields = ['follow_type']

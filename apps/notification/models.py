@@ -38,7 +38,7 @@ class Notification(models.Model):
         elif self.type == NotificationTypes.COMMENT:
             self.message = f'{self.from_user.username} commented on your post with id {self.target_id}'
         elif self.type == NotificationTypes.POST:
-            return f'{self.from_user.username} created new post in channel wit hid {self.target_id}'
+            self.message = f'{self.from_user.username} created new post in channel with id {self.target_id}'
 
     def save(self, *args, **kwargs):
         self.pre_save()
