@@ -19,4 +19,5 @@ class UserNotificationsAPIView(GenericAPIView):
 
     def get(self, request):
         data = self.get_serializer(self.get_queryset().filter(to_user=request.user), many=True).data
+
         return Response(data={'notifications': data}, status=status.HTTP_200_OK)
