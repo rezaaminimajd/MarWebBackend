@@ -27,6 +27,7 @@ class Notification(models.Model):
     message = models.CharField(max_length=200, null=True, blank=True)
     target_id = models.IntegerField()
     type = models.CharField(choices=NotificationTypes.TYPES, max_length=20)
+    seen = models.BooleanField(default=False)
 
     def pre_save(self):
         if self.type == NotificationTypes.FOLLOW_USER:
