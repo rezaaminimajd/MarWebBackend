@@ -15,6 +15,9 @@ class Channel(models.Model):
     create_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return f'title:{self.title} id:{self.id}'
+
 
 class Topic(models.Model):
     channel = models.ForeignKey('channel.Channel', related_name='topics', on_delete=None, blank=True, null=True)
