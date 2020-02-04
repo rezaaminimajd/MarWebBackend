@@ -1,13 +1,12 @@
 import secrets
 
 from django.core.mail import EmailMultiAlternatives
-from django.shortcuts import render, get_object_or_404
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from rest_framework import status
-from rest_framework.generics import GenericAPIView
+from rest_framework.generics import GenericAPIView, get_object_or_404
 from rest_framework import status, permissions
 from rest_framework.response import Response
 from django.contrib.auth.hashers import check_password
@@ -64,6 +63,7 @@ class ProfileView(GenericAPIView):
     def put(self, request):
         pass
 
+
 class ProfileByIdView(GenericAPIView):
     serializer_class = ProfileSerializers
 
@@ -82,28 +82,34 @@ class FollowUserView(GenericAPIView):
     def post(self, request, username):
         source: User = request.user
         target: User = get_object_or_404(User, username=username)
-        FollowUser.objects.create(source=source.profile, target=target.profile)
-        FollowChannel.objects.create(source=source.profile, target=target.channels.get(main_channel=True))
+        FollowUser.objects.create(source=source, target=target)
+        FollowChannel.objects.create(source=source, target=target.channels.get(main_channel=True))
         return Response(data={"detail": "follow successfully"}, status=status.HTTP_200_OK)
 
+    def delete(self, request, username):
+        deleted, _ = FollowUser.objects.filter(source=request.user, target__username=username).delete()
+        if deleted:
+            return Response(data={'detail': 'You Successfully unFollowed this user'}, status=status.HTTP_200_OK)
+        return Response(data={'errors': 'Unexpected error occurred!'}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
-class GetFollowersView(GenericAPIView):
+
+class FollowersView(GenericAPIView):
     serializer_class = PolymorphicFollowSerializers
 
     def get(self, request, username):
         user = get_object_or_404(User, username=username)
-        followers = user.profile.followers_user.all()
+        followers = user.followers_user.all()
         data = self.get_serializer(followers, many=True).data
         print('data:', data)
         return Response(data={'followers': data}, status=status.HTTP_200_OK)
 
 
-class GetFollowingView(GenericAPIView):
+class FollowingsView(GenericAPIView):
     serializer_class = PolymorphicFollowSerializers
 
     def get(self, request, username):
         user = get_object_or_404(User, username=username)
-        following = user.profile.followings.all()
+        following = user.followings.all()
         data = self.get_serializer(following, many=True).data
         return Response(data={'followings': data}, status=status.HTTP_200_OK)
 
