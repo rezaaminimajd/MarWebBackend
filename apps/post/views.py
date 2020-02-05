@@ -28,7 +28,8 @@ class ChannelPostsListAPIView(GenericAPIView):
         posts, errors = ChannelPosts(channel_id=channel_id)()
         if errors:
             return Response(data={'errors': errors}, status=status.HTTP_404_NOT_FOUND)
-        return Response(data={'posts': posts}, status=status.HTTP_200_OK)
+        data = self.get_serializer(posts, many=True).data
+        return Response(data={'posts': data}, status=status.HTTP_200_OK)
 
 
 class PostAPIView(GenericAPIView):

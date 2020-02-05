@@ -54,7 +54,6 @@ class ChannelAPIView(GenericAPIView):
 
     def put(self, request, channel_id):
         get_object_or_404(channel_models.Channel, id=channel_id)
-        # TODO complete this APIView
 
     def delete(self, request, channel_id):
         channel = get_object_or_404(channel_models.Channel, id=channel_id)

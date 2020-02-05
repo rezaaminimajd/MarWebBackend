@@ -1,5 +1,6 @@
 from rest_framework.serializers import ModelSerializer, SerializerMethodField, CharField
 
+from apps.account.serializers import UserSerializers, PolymorphicFollowSerializers
 from apps.channel import models as channel_models
 from apps.post.serializers import PostAsListItemSerializer
 
@@ -12,18 +13,13 @@ class TopicSerializer(ModelSerializer):
 
 class ChannelAsListItemSerializer(ModelSerializer):
     creator_username = SerializerMethodField('_creator_username')
-    authors = SerializerMethodField('_authors')
+    authors = UserSerializers(many=True, read_only=True)
     followers_count = SerializerMethodField('_followers_count')
     topics = TopicSerializer(many=True, read_only=True)
 
     @staticmethod
     def _creator_username(channel: channel_models.Channel):
         return channel.creator.username
-
-    @staticmethod
-    def _authors(channel: channel_models.Channel):
-
-        return ','.join(channel.authors.all().values_list('username', flat=True))
 
     @staticmethod
     def _followers_count(channel: channel_models.Channel):
@@ -38,17 +34,14 @@ class ChannelAsListItemSerializer(ModelSerializer):
 class ChannelSerializer(ModelSerializer):
     posts = PostAsListItemSerializer(many=True, read_only=True)
     creator_username = SerializerMethodField('_creator_username')
-    authors = SerializerMethodField('_authors')
+    authors = UserSerializers(many=True, read_only=True)
     followers_count = SerializerMethodField('_followers_count')
+    followers_channel = PolymorphicFollowSerializers(read_only=True, many=True)
     topics = TopicSerializer(many=True, read_only=True)
 
     @staticmethod
     def _creator_username(channel: channel_models.Channel):
         return channel.creator.username
-
-    @staticmethod
-    def _authors(channel: channel_models.Channel):
-        return ','.join(channel.authors.all().values_list('username', flat=True))
 
     @staticmethod
     def _followers_count(channel: channel_models.Channel):
@@ -59,7 +52,7 @@ class ChannelSerializer(ModelSerializer):
         fields = ['id', 'title', 'topics', 'description', 'creator_username', 'authors', 'followers_count',
                   'create_time',
                   'update_time',
-                  'posts', 'image']
+                  'posts', 'image', 'followers_channel']
 
 
 class ChannelPostSerializer(ModelSerializer):
