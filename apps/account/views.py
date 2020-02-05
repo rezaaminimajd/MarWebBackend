@@ -73,9 +73,6 @@ class ProfileByIdView(GenericAPIView):
         data = self.get_serializer(profile).data
         return Response(data=data, status=status.HTTP_200_OK)
 
-    def put(self, request):
-        pass
-
 
 class FollowUserView(GenericAPIView):
 

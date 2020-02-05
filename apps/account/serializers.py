@@ -1,12 +1,11 @@
-from rest_framework import serializers, status
+from django.contrib.auth.hashers import make_password
+from rest_framework import serializers
 from rest_framework.serializers import SerializerMethodField
 from rest_framework.validators import UniqueValidator
+from rest_polymorphic.serializers import PolymorphicSerializer
 
 from apps.channel.models import Channel
 from .models import *
-from rest_polymorphic.serializers import PolymorphicSerializer
-from phonenumber_field.serializerfields import PhoneNumberField
-from django.contrib.auth.hashers import make_password
 
 
 class UserSerializers(serializers.ModelSerializer):
@@ -46,7 +45,28 @@ class ProfileSerializers(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ['age', 'telephone_number', 'user']
+        fields = ['age', 'telephone_number', 'user', 'image']
+
+
+class ProfileUpdateSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(required=False)
+    password = serializers.CharField(required=False)
+    repeat_password = serializers.CharField(required=False)
+    age = serializers.IntegerField(required=False)
+    telephone_number = serializers.CharField(required=False)
+    first_name = serializers.CharField(required=False)
+    last_name = serializers.CharField(required=False)
+    image = serializers.ImageField(required=False)
+
+    class Meta:
+        model = User
+        fields = ['email', 'password', 'repeat_password', 'age', 'telephone_number', 'first_name', 'last_name', 'image']
+
+    def validate(self, attrs):
+        if attrs['password'] and attrs['password'] != attrs['repeat_password']:
+            raise serializers.ValidationError('password dont\'t match')
+        super().validate(attrs)
+        return attrs
 
 
 class FollowSerializers(serializers.ModelSerializer):
