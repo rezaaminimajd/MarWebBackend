@@ -6,7 +6,7 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from rest_framework import permissions
+from rest_framework import permissions, status
 from rest_framework.generics import GenericAPIView, get_object_or_404
 from rest_framework.response import Response
 
@@ -166,3 +166,12 @@ class ForgotPasswordConfirmView(GenericAPIView):
         user.password = make_password(data['new_password1'])
         user.save()
         return Response({'detail': 'Successfully Changed Password'}, status=200)
+
+
+class AllUsersListAPIView(GenericAPIView):
+    serializer_class = UserSerializers
+    queryset = User.objects.all()
+
+    def get(self, request):
+        data = self.get_serializer(self.get_queryset(), many=True).data
+        return Response(data={'users': data}, status=status.HTTP_200_OK)
