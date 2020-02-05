@@ -48,7 +48,7 @@ class ProfileSerializers(serializers.ModelSerializer):
         fields = ['age', 'telephone_number', 'user', 'image']
 
 
-class ProfileUpdateSerializer(serializers.Serializer):
+class ProfileUpdateSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(required=False)
     age = serializers.IntegerField(required=False, )
     telephone_number = serializers.CharField(required=False)
