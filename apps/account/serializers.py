@@ -49,12 +49,12 @@ class ProfileSerializers(serializers.ModelSerializer):
 
 
 class ProfileUpdateSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField()
-    age = serializers.IntegerField()
-    telephone_number = serializers.CharField()
-    first_name = serializers.CharField()
-    last_name = serializers.CharField()
-    image = serializers.ImageField()
+    email = serializers.EmailField(required=False)
+    age = serializers.IntegerField(required=False)
+    telephone_number = serializers.CharField(required=False)
+    first_name = serializers.CharField(required=False)
+    last_name = serializers.CharField(required=False)
+    image = serializers.ImageField(required=False, null=True)
 
     class Meta:
         model = User
