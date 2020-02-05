@@ -51,7 +51,7 @@ class SubCommentSerializer(ModelSerializer):
 
     class Meta:
         model = post_models.Comment
-        fields = ['id', 'post_related_id', 'title', 'comment_owner', 'body', 'media', 'create_date', 'update_date']
+        fields = ['id', 'post_related_id', 'comment_owner', 'body', 'media', 'create_date', 'update_date']
 
 
 class CommentSerializer(ModelSerializer):
@@ -65,7 +65,7 @@ class CommentSerializer(ModelSerializer):
 
     class Meta:
         model = post_models.Comment
-        fields = ['id', 'parent_comment', 'post_related_id', 'title', 'comment_owner', 'body', 'media', 'create_date',
+        fields = ['id', 'parent_comment', 'post_related_id', 'comment_owner', 'body', 'media', 'create_date',
                   'update_date', 'replies']
 
 
