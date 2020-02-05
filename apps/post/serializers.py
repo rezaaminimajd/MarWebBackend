@@ -51,13 +51,13 @@ class SubCommentSerializer(ModelSerializer):
 
 
 class CommentSerializer(ModelSerializer):
-    parent_comment = PrimaryKeyRelatedField(read_only=True)
+    # parent_comment = PrimaryKeyRelatedField(read_only=True)
     replies = SubCommentSerializer(many=True)
     user = UserSerializers(read_only=True)
 
     class Meta:
         model = post_models.Comment
-        fields = ['id', 'parent_comment', 'post_related', 'user', 'body', 'media', 'create_date',
+        fields = ['id', 'post_related', 'user', 'body', 'media', 'create_date',
                   'update_date', 'replies']
 
 
