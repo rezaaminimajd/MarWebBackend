@@ -44,35 +44,62 @@ class PostCreateSerializer(ModelSerializer):
 
 class SubCommentSerializer(ModelSerializer):
     user = UserSerializers(read_only=True)
+    likes = serializers.SerializerMethodField('_likes')
+    profile_image = serializers.SerializerMethodField('_image')
+
+    @staticmethod
+    def _likes(post: post_models.Post):
+        return post.likes.count()
+
+    @staticmethod
+    def _image(comment: post_models.Comment):
+        return comment.user.profile.image
 
     class Meta:
         model = post_models.Comment
-        fields = ['id', 'post_related', 'user', 'body', 'media', 'create_date', 'update_date']
+        fields = ['id', 'likes', 'profile_image', 'post_related', 'user', 'body', 'media', 'create_date', 'update_date']
 
 
 class CommentSerializer(ModelSerializer):
     parent_comment = PrimaryKeyRelatedField(read_only=True)
     replies = SubCommentSerializer(many=True)
     user = UserSerializers(read_only=True)
+    likes = serializers.SerializerMethodField('_likes')
+    profile_image = serializers.SerializerMethodField('_image')
+
+    @staticmethod
+    def _likes(post: post_models.Post):
+        return post.likes.count()
+
+    @staticmethod
+    def _image(comment: post_models.Comment):
+        return comment.user.profile.image
 
     class Meta:
         model = post_models.Comment
-        fields = ['id', 'parent_comment', 'post_related', 'user', 'body', 'media', 'create_date',
+        fields = ['id', 'profile_image', 'likes', 'parent_comment', 'post_related', 'user', 'body', 'media',
+                  'create_date',
                   'update_date', 'replies']
 
 
 class PostSerializer(ModelSerializer):
     user = UserSerializers(read_only=True)
     comments = CommentSerializer(read_only=True, many=True)
-    likes = SerializerMethodField('_likes')
+    likes = serializers.SerializerMethodField('_likes')
+    profile_image = serializers.SerializerMethodField('_image')
 
     @staticmethod
     def _likes(post: post_models.Post):
         return post.likes.count()
 
+    @staticmethod
+    def _image(comment: post_models.Comment):
+        return comment.user.profile.image
+
     class Meta:
         model = post_models.Post
-        fields = ['id', 'title', 'user', 'channel', 'body', 'media', 'likes', 'create_date', 'update_date', 'comments']
+        fields = ['id', 'likes', 'profile_image', 'title', 'user', 'channel', 'body', 'media', 'likes', 'create_date',
+                  'update_date', 'comments']
 
 
 class UserActionPolymorphismSerializer(PolymorphicSerializer):
