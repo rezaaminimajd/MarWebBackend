@@ -54,7 +54,7 @@ class ChannelPostSerializer(ModelSerializer):
         fields = ['creator', 'title', 'subject', 'image', 'authors', 'description']
 
 
-class ChanelUpdateSerializer(serializers.ModelSerializer):
+class ChanelUpdateSerializer(ModelSerializer):
     class Meta:
         model = channel_models.Channel
         fields = ['creator', 'title', 'subject', 'image', 'authors', 'description']
