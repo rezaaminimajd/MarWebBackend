@@ -64,10 +64,15 @@ class CommentSerializer(ModelSerializer):
 class PostSerializer(ModelSerializer):
     user = UserSerializers(read_only=True)
     comments = CommentSerializer(read_only=True, many=True)
+    likes = SerializerMethodField('_likes')
+
+    @staticmethod
+    def _likes(post: post_models.Post):
+        return post.likes.count()
 
     class Meta:
         model = post_models.Post
-        fields = ['id', 'title', 'user', 'channel', 'body', 'media', 'create_date', 'update_date', 'comments']
+        fields = ['id', 'title', 'user', 'channel', 'body', 'media', 'likes', 'create_date', 'update_date', 'comments']
 
 
 class UserActionPolymorphismSerializer(PolymorphicSerializer):
