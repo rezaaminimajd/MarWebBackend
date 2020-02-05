@@ -60,7 +60,7 @@ class ProfileUpdateSerializer(serializers.Serializer):
         instance.email = validated_data.get('email', instance.email)
         instance.first_name = validated_data.get('first_name', instance.first_name)
         instance.last_name = validated_data.get('last_name', instance.last_name)
-        instance.profile.age = validated_data.get('age') if validated_data.get('age') != -1 else instance.profile.age
+        instance.profile.age = validated_data.get('age', instance.profile.age)
         instance.profile.telephone_number = validated_data.get('telephone_number', instance.profile.telephone_number)
         instance.profile.image = validated_data.get('image', instance.profile.image)
         instance.save()
