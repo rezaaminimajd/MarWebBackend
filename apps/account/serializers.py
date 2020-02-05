@@ -48,13 +48,13 @@ class ProfileSerializers(serializers.ModelSerializer):
         fields = ['age', 'telephone_number', 'user', 'image']
 
 
-class ProfileUpdateSerializer(serializers.ModelSerializer):
+class ProfileUpdateSerializer(serializers.Serializer):
     email = serializers.EmailField(required=False)
-    age = serializers.IntegerField(required=False)
+    age = serializers.IntegerField(required=False, )
     telephone_number = serializers.CharField(required=False)
     first_name = serializers.CharField(required=False)
     last_name = serializers.CharField(required=False)
-    image = serializers.ImageField(required=False, null=True)
+    image = serializers.ImageField(required=False, allow_null=True, allow_empty_file=True)
 
     class Meta:
         model = User
@@ -62,10 +62,9 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
 
     def update(self, instance: User, validated_data):
         instance.email = validated_data.get('email', instance.email)
-
         instance.first_name = validated_data.get('first_name', instance.first_name)
         instance.last_name = validated_data.get('last_name', instance.last_name)
-        instance.profile.age = validated_data.get('age', instance.profile.age)
+        instance.profile.age = validated_data.get('age') if validated_data.get('age') != -1 else instance.profile.age
         instance.profile.telephone_number = validated_data.get('telephone_number', instance.profile.telephone_number)
         instance.profile.image = validated_data.get('image', instance.profile.image)
         instance.save()

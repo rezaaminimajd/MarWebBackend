@@ -83,6 +83,12 @@ class ChangePassword(GenericAPIView):
     serializer_class = ChangePasswordSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid:
+            data = serializer.data
+        if not request.user.check_password
+
 
 class FollowUserView(GenericAPIView):
 
