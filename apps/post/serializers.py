@@ -43,11 +43,7 @@ class PostCreateSerializer(ModelSerializer):
 
 
 class SubCommentSerializer(ModelSerializer):
-    comment_owner = SerializerMethodField()
-
-    @staticmethod
-    def _comment_owner(comment: post_models.Comment):
-        return comment.user.username
+    user = UserSerializers(read_only=True)
 
     class Meta:
         model = post_models.Comment
