@@ -85,11 +85,13 @@ class ChangePassword(GenericAPIView):
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid:
+        if serializer.is_valid(raise_exception=True):
             data = serializer.data
         if not request.user.check_password(data['password']):
-            return Response(data={'errors': 'incorrect current password'})
-        request.user.password = make_password()
+            return Response(data={'errors': 'incorrect current password'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+        request.user.password = make_password(data['new_password'])
+        request.user.save()
+        return Response(data={'detail': 'password changed successfully'}, status=status.HTTP_200_OK)
 
 
 class FollowUserView(GenericAPIView):

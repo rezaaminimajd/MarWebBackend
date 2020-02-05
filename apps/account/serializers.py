@@ -54,7 +54,7 @@ class ProfileUpdateSerializer(serializers.Serializer):
     telephone_number = serializers.CharField(required=False)
     first_name = serializers.CharField(required=False)
     last_name = serializers.CharField(required=False)
-    image = serializers.ImageField(required=False, allow_null=True, allow_empty_file=True)
+    image = serializers.ImageField(required=False, allow_null=True)
 
     def update(self, instance: User, validated_data):
         instance.email = validated_data.get('email', instance.email)
@@ -69,12 +69,12 @@ class ProfileUpdateSerializer(serializers.Serializer):
 
 
 class ChangePasswordSerializer(serializers.Serializer):
-    old_password = serializers.CharField(style={'input_type': 'password'})
-    new_password1 = serializers.CharField(style={'input_type': 'password'})
-    new_password2 = serializers.CharField(style={'input_type': 'password'})
+    password = serializers.CharField(style={'input_type': 'password'})
+    new_password = serializers.CharField(style={'input_type': 'password'})
+    repeat_new_password = serializers.CharField(style={'input_type': 'password'})
 
     def validate(self, data):
-        if data['new_password1'] != data['new_password2']:
+        if data['new_password'] != data['repeat_new_password']:
             raise serializers.ValidationError('passwords don\'t match!')
         return data
 
