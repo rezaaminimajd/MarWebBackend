@@ -1,4 +1,5 @@
 from rest_framework.serializers import ModelSerializer, SerializerMethodField, CharField
+from rest_framework import serializers
 
 from apps.account.serializers import UserSerializers, PolymorphicFollowSerializers
 from apps.channel import models as channel_models
@@ -48,6 +49,12 @@ class ChannelSerializer(ModelSerializer):
 
 
 class ChannelPostSerializer(ModelSerializer):
+    class Meta:
+        model = channel_models.Channel
+        fields = ['creator', 'title', 'subject', 'image', 'authors', 'description']
+
+
+class ChanelUpdateSerializer(ModelSerializer):
     class Meta:
         model = channel_models.Channel
         fields = ['creator', 'title', 'subject', 'image', 'authors', 'description']

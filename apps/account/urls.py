@@ -15,7 +15,6 @@ urlpatterns = [
     path('profile/<username>', views.ProfileView.as_view()),
     path('profile-update', views.ProfileView.as_view(), name='profile_update'),
     path('password-update', views.ChangePassword.as_view(), name='password_update'),
-    path('profile/id/<int:user_id>', views.ProfileByIdView.as_view()),
     path('follow/<username>', views.FollowUserView.as_view()),
     path('reset_password', views.ResetPasswordView.as_view()),
     path('followers/<username>', views.FollowersView.as_view()),
