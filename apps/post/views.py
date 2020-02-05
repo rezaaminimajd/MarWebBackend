@@ -91,7 +91,7 @@ class CommentAPIView(GenericAPIView):
         comment = self.get_serializer(data=request.data)
         comment.is_valid(raise_exception=True)
         comment.save()
-        return Response(data={'detail': 'comment has been registered'}, status=status.HTTP_200_OK)
+        return Response(data={'detail': 'comment has been submitted'}, status=status.HTTP_200_OK)
 
     def put(self, request, post_id, comment_id):
         user: User = request.user

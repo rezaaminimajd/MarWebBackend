@@ -61,7 +61,11 @@ class ProfileView(GenericAPIView):
         return Response(data=data, status=status.HTTP_200_OK)
 
     def put(self, request):
-        pass
+        updated_profile = ProfileUpdateSerializer(data=request.data)
+        if updated_profile.is_valid(raise_exception=True):
+            updated_profile.save()
+            return Response(data={'detail': 'Profile updated successfully'})
+        return Response(data={'errors': 'Profile didn\'t updated'})
 
 
 class ProfileByIdView(GenericAPIView):
