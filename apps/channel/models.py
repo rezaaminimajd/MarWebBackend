@@ -7,7 +7,7 @@ from django.db import models
 
 class Channel(models.Model):
     creator = models.ForeignKey(User, related_name='channels', on_delete=models.CASCADE)
-    title = models.CharField(max_length=100)
+    title = models.CharField(max_length=100, blank=True, null=False)
     main_channel = models.BooleanField(default=False)
     subject = models.CharField(max_length=100, blank=True, null=False)
     image = models.ImageField(blank=True, null=True)
