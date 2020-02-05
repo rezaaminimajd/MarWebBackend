@@ -48,8 +48,6 @@ class ChannelSerializer(ModelSerializer):
 
 
 class ChannelPostSerializer(ModelSerializer):
-    authors = CharField(max_length=10000)
-
     class Meta:
-        model = channel_models
-        fields = ['id', 'creator', 'title', 'subject', 'image', 'authors', 'description']
+        model = channel_models.Channel
+        fields = ['creator', 'title', 'subject', 'image', 'authors', 'description']
