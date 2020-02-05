@@ -61,7 +61,7 @@ class ProfileView(GenericAPIView):
         return Response(data=data, status=status.HTTP_200_OK)
 
     def put(self, request):
-        updated_profile = ProfileUpdateSerializer(data=request.data)
+        updated_profile = ProfileUpdateSerializer(instance=request.user, data=request.data)
         if updated_profile.is_valid(raise_exception=True):
             updated_profile.save()
             return Response(data={'detail': 'Profile updated successfully'})
@@ -87,8 +87,9 @@ class ChangePassword(GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid:
             data = serializer.data
-        if not request.user.check_password:
-            pass
+        if not request.user.check_password(data['password']):
+            return Response(data={'errors': 'incorrect current password'})
+        request.user.password = make_password()
 
 
 class FollowUserView(GenericAPIView):

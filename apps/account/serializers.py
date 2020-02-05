@@ -48,17 +48,13 @@ class ProfileSerializers(serializers.ModelSerializer):
         fields = ['age', 'telephone_number', 'user', 'image']
 
 
-class ProfileUpdateSerializer(serializers.ModelSerializer):
+class ProfileUpdateSerializer(serializers.Serializer):
     email = serializers.EmailField(required=False)
     age = serializers.IntegerField(required=False, )
     telephone_number = serializers.CharField(required=False)
     first_name = serializers.CharField(required=False)
     last_name = serializers.CharField(required=False)
     image = serializers.ImageField(required=False, allow_null=True, allow_empty_file=True)
-
-    class Meta:
-        model = User
-        fields = ['id', 'email', 'age', 'telephone_number', 'first_name', 'last_name', 'image']
 
     def update(self, instance: User, validated_data):
         instance.email = validated_data.get('email', instance.email)
