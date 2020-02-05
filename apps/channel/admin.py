@@ -14,8 +14,3 @@ class PostInline(admin.StackedInline):
 class ChannelAdmin(admin.ModelAdmin):
     inlines = [PostInline]
     pass
-
-
-@admin.register(channel_models.Topic)
-class TopicAdmin(admin.ModelAdmin):
-    pass
