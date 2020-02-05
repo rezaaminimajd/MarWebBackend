@@ -57,7 +57,7 @@ class SubCommentSerializer(ModelSerializer):
 class CommentSerializer(ModelSerializer):
     parent_comment = PrimaryKeyRelatedField(read_only=True)
     replies = SubCommentSerializer(many=True)
-    comment_owner = SerializerMethodField()
+    user = UserSerializers(read_only=True)
 
     @staticmethod
     def _comment_owner(comment: post_models.Comment):
@@ -65,7 +65,7 @@ class CommentSerializer(ModelSerializer):
 
     class Meta:
         model = post_models.Comment
-        fields = ['id', 'parent_comment', 'post_related_id', 'comment_owner', 'body', 'media', 'create_date',
+        fields = ['id', 'parent_comment', 'post_related_id', 'user', 'body', 'media', 'create_date',
                   'update_date', 'replies']
 
 
