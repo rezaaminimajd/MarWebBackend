@@ -62,6 +62,7 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
 
     def update(self, instance: User, validated_data):
         instance.email = validated_data.get('email', instance.email)
+
         instance.first_name = validated_data.get('first_name', instance.first_name)
         instance.last_name = validated_data.get('last_name', instance.last_name)
         instance.profile.age = validated_data.get('age', instance.profile.age)
@@ -70,6 +71,17 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
         instance.save()
         instance.profile.save()
         return instance
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(style={'input_type': 'password'})
+    new_password1 = serializers.CharField(style={'input_type': 'password'})
+    new_password2 = serializers.CharField(style={'input_type': 'password'})
+
+    def validate(self, data):
+        if data['new_password1'] != data['new_password2']:
+            raise serializers.ValidationError('passwords don\'t match!')
+        return data
 
 
 class FollowSerializers(serializers.ModelSerializer):
