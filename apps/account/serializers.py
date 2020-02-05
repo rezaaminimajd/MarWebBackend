@@ -49,26 +49,27 @@ class ProfileSerializers(serializers.ModelSerializer):
 
 
 class ProfileUpdateSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(required=False)
-    password = serializers.CharField(required=False)
-    repeat_password = serializers.CharField(required=False)
-    age = serializers.IntegerField(required=False)
-    telephone_number = serializers.CharField(required=False)
-    first_name = serializers.CharField(required=False)
-    last_name = serializers.CharField(required=False)
-    image = serializers.ImageField(required=False)
+    email = serializers.EmailField()
+    age = serializers.IntegerField()
+    telephone_number = serializers.CharField()
+    first_name = serializers.CharField()
+    last_name = serializers.CharField()
+    image = serializers.ImageField()
 
     class Meta:
         model = User
-        fields = ['email', 'password', 'repeat_password', 'age', 'telephone_number', 'first_name', 'last_name', 'image']
+        fields = ['id', 'email', 'age', 'telephone_number', 'first_name', 'last_name', 'image']
 
-    def update(self, instance, validated_data):
-        instance.update()
-
-    def validate(self, attrs):
-        if attrs['password'] and attrs['password'] != attrs['repeat_password']:
-            raise serializers.ValidationError('password dont\'t match')
-        return attrs
+    def update(self, instance: User, validated_data):
+        instance.email = validated_data.get('email', instance.email)
+        instance.first_name = validated_data.get('first_name', instance.first_name)
+        instance.last_name = validated_data.get('last_name', instance.last_name)
+        instance.profile.age = validated_data.get('age', instance.profile.age)
+        instance.profile.telephone_number = validated_data.get('telephone_number', instance.profile.telephone_number)
+        instance.profile.image = validated_data.get('image', instance.profile.image)
+        instance.save()
+        instance.profile.save()
+        return instance
 
 
 class FollowSerializers(serializers.ModelSerializer):

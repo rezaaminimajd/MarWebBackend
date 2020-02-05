@@ -13,6 +13,7 @@ urlpatterns = [
     path('signup', views.SignUpView.as_view(), name='signup'),
     path('logout', views.LogoutView.as_view(), name='logout'),
     path('profile/<username>', views.ProfileView.as_view()),
+    path('profile/update', views.ProfileView.as_view(), name='update_profile'),
     path('profile/id/<int:user_id>', views.ProfileByIdView.as_view()),
     path('follow/<username>', views.FollowUserView.as_view()),
     path('reset_password', views.ResetPasswordView.as_view()),
