@@ -9,6 +9,7 @@ class Channel(models.Model):
     creator = models.ForeignKey(User, related_name='channels', on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
     main_channel = models.BooleanField(default=False)
+    subject = models.CharField(max_length=100, blank=True, null=False)
     image = models.ImageField(blank=True, null=True)
     description = models.TextField(blank=True, null=False)
     authors = models.ManyToManyField(User, related_name='author_channels', blank=True, null=True)
@@ -17,8 +18,3 @@ class Channel(models.Model):
 
     def __str__(self):
         return f'title:{self.title} id:{self.id}'
-
-
-class Topic(models.Model):
-    channel = models.ForeignKey('channel.Channel', related_name='topics', on_delete=None, blank=True, null=True)
-    name = models.CharField(max_length=100, unique=True)
