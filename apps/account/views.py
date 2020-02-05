@@ -68,17 +68,6 @@ class ProfileView(GenericAPIView):
         return Response(data={'errors': 'Profile didn\'t updated'})
 
 
-class ProfileByIdView(GenericAPIView):
-    serializer_class = ProfileSerializers
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get(self, request, user_id):
-        user = get_object_or_404(User, id=user_id)
-        profile = user.profile
-        data = self.get_serializer(profile).data
-        return Response(data=data, status=status.HTTP_200_OK)
-
-
 class ChangePassword(GenericAPIView):
     serializer_class = ChangePasswordSerializer
     permission_classes = [permissions.IsAuthenticated]
