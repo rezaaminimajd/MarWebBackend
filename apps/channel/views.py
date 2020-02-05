@@ -54,7 +54,7 @@ class ChannelAPIView(GenericAPIView):
         return Response(data={'errors': 'Error occurred, channel not created!'})
 
     def put(self, request, channel_id):
-        get_object_or_404(channel_models.Channel, id=channel_id)
+        pass
 
     def delete(self, request, channel_id):
         channel = get_object_or_404(channel_models.Channel, id=channel_id)
