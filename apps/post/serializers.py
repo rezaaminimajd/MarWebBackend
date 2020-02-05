@@ -63,7 +63,7 @@ class CommentSerializer(ModelSerializer):
 
 class PostSerializer(ModelSerializer):
     user = UserSerializers(read_only=True)
-    comments = CommentSerializer(read_only=True)
+    comments = CommentSerializer(read_only=True, many=True)
 
     class Meta:
         model = post_models.Post
