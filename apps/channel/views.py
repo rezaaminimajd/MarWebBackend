@@ -51,6 +51,7 @@ class ChannelAPIView(GenericAPIView):
             new_channel = new_channel.save()
             return Response(data={'detail': channel_serializers.ChannelSerializer(new_channel).data},
                             status=status.HTTP_200_OK)
+        return Response(data={'errors': 'Error occurred, channel not created!'})
 
     def put(self, request, channel_id):
         get_object_or_404(channel_models.Channel, id=channel_id)
