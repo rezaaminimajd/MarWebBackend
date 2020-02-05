@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer, SerializerMethodField, CharField
 
-from apps.account.serializers import ProfileSerializers
+from apps.account.serializers import UserSerializers
 from apps.channel import models as channel_models
 from apps.post.serializers import PostAsListItemSerializer
 
@@ -38,7 +38,7 @@ class ChannelAsListItemSerializer(ModelSerializer):
 class ChannelSerializer(ModelSerializer):
     posts = PostAsListItemSerializer(many=True, read_only=True)
     creator_username = SerializerMethodField('_creator_username')
-    authors = ProfileSerializers(many=True)
+    authors = UserSerializers(many=True, read_only=True)
     followers_count = SerializerMethodField('_followers_count')
     topics = TopicSerializer(many=True, read_only=True)
 
