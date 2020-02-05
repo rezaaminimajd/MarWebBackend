@@ -53,6 +53,16 @@ class ChannelPostSerializer(ModelSerializer):
         model = channel_models.Channel
         fields = ['creator', 'title', 'subject', 'image', 'authors', 'description']
 
+    def update(self, instance: channel_models.Channel, validated_data):
+        instance.creator = validated_data.get('creator', instance.creator)
+        instance.title = validated_data.get('title', instance.title)
+        instance.subject = validated_data.get('subject', instance.subject)
+        instance.image = validated_data.get('image', instance.image)
+        instance.authors.add(validated_data.get('authors', instance.authors))
+        instance.description = validated_data.get('description', instance.description)
+        instance.save()
+        return instance
+
 
 class ChanelUpdateSerializer(ModelSerializer):
     class Meta:
