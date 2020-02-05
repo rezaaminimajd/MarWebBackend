@@ -3,6 +3,7 @@ from rest_framework.relations import PrimaryKeyRelatedField
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from rest_polymorphic.serializers import PolymorphicSerializer
 
+from apps.account.serializers import UserSerializers
 from apps.post import models as post_models
 
 
@@ -33,18 +34,6 @@ class UserActionSerializer(ModelSerializer):
     class Meta:
         model = post_models.UserActionTemplate
         fields = ['id', 'type', 'owner', 'body', 'media', 'create_date', 'update_date']
-
-
-class PostSerializer(ModelSerializer):
-    post_owner = SerializerMethodField('_post_owner', read_only=True)
-
-    @staticmethod
-    def _post_owner(post: post_models.Post):
-        return post.user.username
-
-    class Meta:
-        model = post_models.Post
-        fields = ['id', 'title', 'post_owner', 'channel', 'body', 'media', 'create_date', 'update_date']
 
 
 class PostCreateSerializer(ModelSerializer):
@@ -78,6 +67,15 @@ class CommentSerializer(ModelSerializer):
         model = post_models.Comment
         fields = ['id', 'parent_comment', 'post_related_id', 'title', 'comment_owner', 'body', 'media', 'create_date',
                   'update_date', 'replies']
+
+
+class PostSerializer(ModelSerializer):
+    user = UserSerializers(read_only=True)
+    comments = CommentSerializer(read_only=True)
+
+    class Meta:
+        model = post_models.Post
+        fields = ['id', 'title', 'user', 'channel', 'body', 'media', 'create_date', 'update_date', 'comments']
 
 
 class UserActionPolymorphismSerializer(PolymorphicSerializer):
