@@ -63,12 +63,11 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
         fields = ['email', 'password', 'repeat_password', 'age', 'telephone_number', 'first_name', 'last_name', 'image']
 
     def update(self, instance, validated_data):
-        pass
+        instance.update()
 
     def validate(self, attrs):
         if attrs['password'] and attrs['password'] != attrs['repeat_password']:
             raise serializers.ValidationError('password dont\'t match')
-        super().validate(attrs)
         return attrs
 
 

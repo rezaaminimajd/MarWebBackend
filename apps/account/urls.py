@@ -20,5 +20,6 @@ urlpatterns = [
     path('followings/<username>', views.FollowingsView.as_view()),
     path('password/reset', views.ForgotPasswordView.as_view()),
     path('password/reset/confirm', views.ForgotPasswordConfirmView.as_view()),
+    path('users', views.AllUsersListAPIView.as_view(), name='users_list'),
 
 ]
