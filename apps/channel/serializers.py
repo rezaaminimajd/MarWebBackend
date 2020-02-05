@@ -1,5 +1,6 @@
 from rest_framework.serializers import ModelSerializer, SerializerMethodField, CharField
 
+from apps.account.serializers import ProfileSerializers
 from apps.channel import models as channel_models
 from apps.post.serializers import PostAsListItemSerializer
 
@@ -22,7 +23,6 @@ class ChannelAsListItemSerializer(ModelSerializer):
 
     @staticmethod
     def _authors(channel: channel_models.Channel):
-
         return ','.join(channel.authors.all().values_list('username', flat=True))
 
     @staticmethod
@@ -38,7 +38,7 @@ class ChannelAsListItemSerializer(ModelSerializer):
 class ChannelSerializer(ModelSerializer):
     posts = PostAsListItemSerializer(many=True, read_only=True)
     creator_username = SerializerMethodField('_creator_username')
-    authors = SerializerMethodField('_authors')
+    authors = ProfileSerializers(many=True)
     followers_count = SerializerMethodField('_followers_count')
     topics = TopicSerializer(many=True, read_only=True)
 
