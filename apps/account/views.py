@@ -87,7 +87,8 @@ class ChangePassword(GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid:
             data = serializer.data
-        if not request.user.check_password
+        if not request.user.check_password:
+            pass
 
 
 class FollowUserView(GenericAPIView):
