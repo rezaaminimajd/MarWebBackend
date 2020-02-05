@@ -39,7 +39,8 @@ class PostAPIView(GenericAPIView):
 
     def get(self, request, post_id):
         post = get_object_or_404(Post, id=post_id)
-        return Response(data={'post': post}, status=status.HTTP_200_OK)
+        data = self.get_serializer(post).data
+        return Response(data={'post': data}, status=status.HTTP_200_OK)
 
     def post(self, request):
         post = post_serializers.PostCreateSerializer(data=request.data)
