@@ -17,6 +17,15 @@ class UserActionTypes:
     )
 
 
+class LikeTypes:
+    LIKE = 'like'
+    DISLIKE = 'dislike'
+    TYPES = (
+        (LIKE, 'Like'),
+        (DISLIKE, 'Dislike')
+    )
+
+
 class UserActionTemplate(PolymorphicModel):
     user = models.ForeignKey(User, related_name='actions', on_delete=models.CASCADE)
     body = models.TextField()
@@ -70,3 +79,4 @@ class Comment(UserActionTemplate):
 class Like(models.Model):
     target = models.ForeignKey('post.UserActionTemplate', related_name='likes', on_delete=models.CASCADE)
     liker = models.ForeignKey(User, related_name='likes', on_delete=models.CASCADE)
+    type = models.CharField(max_length=20, choices=LikeTypes.TYPES, default=LikeTypes.LIKE)

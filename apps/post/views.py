@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import parsers
 
-from apps.post.models import Post, Comment, UserActionTemplate, UserActionTypes, Like
+from apps.post.models import Post, Comment, UserActionTemplate, UserActionTypes, Like, LikeTypes
 
 from apps.post.serializers import PostSerializer, CommentSerializer
 from apps.post.services.channel_posts_list import ChannelPosts
@@ -115,8 +115,45 @@ class LikeAPIView(GenericAPIView):
 
     def post(self, request, action_id):
         action = get_object_or_404(UserActionTemplate, id=action_id)
-        Like.objects.create(target=action, liker=request.user)
-        return Response(data={'detail': 'like successfully'}, status=status.HTTP_200_OK)
+        if Like.objects.filter(target=action, liker=request.user, type=LikeTypes.LIKE).exists():
+            return Response(data={'detail': 'Action already liked'}, status=status.HTTP_200_OK)
+        try:
+            Like.objects.get(target=action, liker=request.user, type=LikeTypes.DISLIKE).delete()
+        except Like.DoesNotExist:
+            pass
+        Like.objects.create(target=action, liker=request.user, type=LikeTypes.LIKE)
+        return Response(data={'detail': 'Liked successfully'}, status=status.HTTP_200_OK)
+
+    def delete(self, request, action_id):
+        action = get_object_or_404(UserActionTemplate, id=action_id)
+        try:
+            Like.objects.get(target=action, liker=request.user, type=LikeTypes.LIKE).delete()
+            return Response(data={'detail': 'Action unliked'})
+        except Like.DoesNotExist:
+            return Response(data={'detail': 'Action already unliked'})
+
+
+class DisLikeAPIView(GenericAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, action_id):
+        action = get_object_or_404(UserActionTemplate, id=action_id)
+        if Like.objects.filter(target=action, liker=request.user, type=LikeTypes.DISLIKE).exists():
+            return Response(data={'detail': 'Action already disliked'}, status=status.HTTP_200_OK)
+        try:
+            Like.objects.get(target=action, liker=request.user, type=LikeTypes.LIKE).delete()
+        except Like.DoesNotExist:
+            pass
+        Like.objects.create(target=action, liker=request.user, type=LikeTypes.DISLIKE)
+        return Response(data={'detail': 'Disliked successfully'}, status=status.HTTP_200_OK)
+
+    def delete(self, request, action_id):
+        action = get_object_or_404(UserActionTemplate, id=action_id)
+        try:
+            Like.objects.get(target=action, liker=request.user, type=LikeTypes.DISLIKE).delete()
+            return Response(data={'detail': 'Action disliked'})
+        except Like.DoesNotExist:
+            return Response(data={'detail': 'Action already disliked'})
 
 
 class NewPostsAPIVIew(GenericAPIView):
