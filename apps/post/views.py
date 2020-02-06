@@ -100,8 +100,6 @@ class CommentAPIView(GenericAPIView):
         if user != comment.user:
             return Response(data={'detail': 'this post is not for this user'}, status=status.HTTP_403_FORBIDDEN)
 
-        # todo update
-
     def delete(self, request, post_id, comment_id):
         user: User = request.user
         post = get_object_or_404(Post, id=post_id)
