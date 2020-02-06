@@ -80,12 +80,6 @@ class CommentAPIView(GenericAPIView):
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, post_id, comment_id):
-        post = get_object_or_404(Post, id=post_id)
-        comment = get_object_or_404(Comment, post=post, id=comment_id)
-        data = self.get_serializer(comment).data
-        return Response(data={'comment': data}, status=status.HTTP_200_OK)
-
     def post(self, request, post_id):
         get_object_or_404(Post, id=post_id)
         comment = self.get_serializer(data=request.data)
