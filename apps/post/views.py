@@ -79,6 +79,7 @@ class CommentsListAPIView(GenericAPIView):
 class CommentAPIView(GenericAPIView):
     serializer_class = CommentCreateSerializer
     permission_classes = [IsAuthenticated]
+    parser_classes = (parsers.MultiPartParser,)
 
     def post(self, request):
         comment = self.get_serializer(data=request.data)
