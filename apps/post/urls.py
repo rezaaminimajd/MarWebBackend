@@ -14,5 +14,5 @@ urlpatterns = [
     path('channelposts/<int:channel_id>', views.ChannelPostsListAPIView.as_view(), name='channel_posts'),
     path('like/<int:action_id>', views.LikeAPIView.as_view(), name='like_action'),
     path('dislike/<int:action_id>', views.DisLikeAPIView.as_view(), name='dislike_action'),
-    path('insert-comment/<int:post_id>', views.CommentAPIView.as_view(), name='insert_comment')
+    path('insert-comment', views.CommentAPIView.as_view(), name='insert_comment')
 ]
