@@ -43,6 +43,12 @@ class PostCreateSerializer(ModelSerializer):
         fields = ['title', 'user', 'channel', 'body', 'media']
 
 
+class CommentCreateSerializer(ModelSerializer):
+    class Meta:
+        model = post_models.Comment
+        fields = ['post_related', 'user', 'replies', 'body', 'media']
+
+
 class SubCommentSerializer(ModelSerializer):
     user = UserSerializerSecondType(read_only=True)
     likes = serializers.SerializerMethodField('_likes')
@@ -136,6 +142,3 @@ class UserActionPolymorphismSerializer(PolymorphicSerializer):
         post_models.Post: PostSerializer,
         post_models.Comment: CommentSerializer,
     }
-
-
-

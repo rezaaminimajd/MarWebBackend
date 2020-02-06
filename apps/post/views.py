@@ -9,7 +9,7 @@ from rest_framework import parsers
 
 from apps.post.models import Post, Comment, UserActionTemplate, UserActionTypes, Like, LikeTypes
 
-from apps.post.serializers import PostSerializer, CommentSerializer
+from apps.post.serializers import PostSerializer, CommentSerializer, CommentCreateSerializer
 from apps.post.services.channel_posts_list import ChannelPosts
 from apps.post.services.followed_channels_posts import FollowedChannelsPosts
 from . import models as post_models
@@ -77,15 +77,16 @@ class CommentsListAPIView(GenericAPIView):
 
 
 class CommentAPIView(GenericAPIView):
-    serializer_class = CommentSerializer
+    serializer_class = CommentCreateSerializer
     permission_classes = [IsAuthenticated]
 
     def post(self, request, post_id):
         get_object_or_404(Post, id=post_id)
         comment = self.get_serializer(data=request.data)
-        comment.is_valid(raise_exception=True)
-        comment.save()
-        return Response(data={'detail': 'comment has been submitted'}, status=status.HTTP_200_OK)
+        if comment.is_valid(raise_exception=True):
+            comment.save()
+            return Response(data={'detail': 'Comment has been submitted'}, status=status.HTTP_200_OK)
+        return Response(data={'error': 'Comment not submitted! an error occurred'})
 
     def put(self, request, post_id, comment_id):
         user: User = request.user
