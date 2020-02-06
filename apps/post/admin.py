@@ -46,3 +46,8 @@ class PostAdmin(PolymorphicChildModelAdmin, CommonAdminFeatures):
 class CommentAdmin(PolymorphicChildModelAdmin, CommonAdminFeatures):
     base_model = post_models.UserActionTemplate
     show_in_index = True
+
+
+@admin.register(post_models.Like)
+class LikeAdmin(admin.ModelAdmin):
+    pass
