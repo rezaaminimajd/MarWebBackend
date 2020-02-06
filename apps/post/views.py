@@ -115,7 +115,7 @@ class LikeAPIView(GenericAPIView):
 
     def post(self, request, action_id):
         action = get_object_or_404(UserActionTemplate, id=action_id)
-        Like.objects.create(target=action, liker=request.user.profile)
+        Like.objects.create(target=action, liker=request.user)
         return Response(data={'detail': 'like successfully'}, status=status.HTTP_200_OK)
 
 
