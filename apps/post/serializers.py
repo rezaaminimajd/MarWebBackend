@@ -3,8 +3,9 @@ from rest_framework.relations import PrimaryKeyRelatedField
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from rest_polymorphic.serializers import PolymorphicSerializer
 
-from apps.account.serializers import UserSerializers
+from apps.account.serializers import UserSerializers, UserSerializerSecondType
 from apps.post import models as post_models
+from apps.post.models import LikeTypes, Like
 
 
 class PostAsListItemSerializer(ModelSerializer):
@@ -43,62 +44,89 @@ class PostCreateSerializer(ModelSerializer):
 
 
 class SubCommentSerializer(ModelSerializer):
-    user = UserSerializers(read_only=True)
+    user = UserSerializerSecondType(read_only=True)
     likes = serializers.SerializerMethodField('_likes')
-    profile_image = serializers.SerializerMethodField('_image')
+    dislikes = serializers.SerializerMethodField('_dislikes')
+    liked = serializers.SerializerMethodField('_liked')
+    disliked = serializers.SerializerMethodField('_disliked')
 
     @staticmethod
-    def _likes(post: post_models.Post):
-        return post.likes.count()
+    def _likes(post: post_models.Comment):
+        return post.likes.filter(type=LikeTypes.LIKE).count()
 
     @staticmethod
-    def _image(comment: post_models.Comment):
-        return comment.user.profile.image
+    def _dislikes(post: post_models.Comment):
+        return post.likes.filter(type=LikeTypes.DISLIKE).count()
+
+    def _liked(self, post: post_models.Comment):
+        return Like.objects.filter(target=post, liker=self.context['request'].user, type=LikeTypes.LIKE).exists()
+
+    def _disliked(self, post: post_models.Comment):
+        return Like.objects.filter(target=post, liker=self.context['request'].user, type=LikeTypes.DISLIKE).exists()
 
     class Meta:
         model = post_models.Comment
-        fields = ['id', 'likes', 'profile_image', 'post_related', 'user', 'body', 'media', 'create_date', 'update_date']
+        fields = ['id', 'likes', 'dislikes', 'liked', 'disliked', 'post_related', 'user', 'body', 'media',
+                  'create_date', 'update_date']
 
 
 class CommentSerializer(ModelSerializer):
     parent_comment = PrimaryKeyRelatedField(read_only=True)
     replies = SubCommentSerializer(many=True)
-    user = UserSerializers(read_only=True)
+    user = UserSerializerSecondType(read_only=True)
     likes = serializers.SerializerMethodField('_likes')
-    profile_image = serializers.SerializerMethodField('_image')
+    dislikes = serializers.SerializerMethodField('_dislikes')
+    liked = serializers.SerializerMethodField('_liked')
+    disliked = serializers.SerializerMethodField('_disliked')
 
     @staticmethod
-    def _likes(post: post_models.Post):
-        return post.likes.count()
+    def _likes(post: post_models.Comment):
+        return post.likes.filter(type=LikeTypes.LIKE).count()
 
     @staticmethod
-    def _image(comment: post_models.Comment):
-        return comment.user.profile.image
+    def _dislikes(post: post_models.Comment):
+        return post.likes.filter(type=LikeTypes.DISLIKE).count()
+
+    def _liked(self, post: post_models.Comment):
+        return Like.objects.filter(target=post, liker=self.context['request'].user, type=LikeTypes.LIKE).exists()
+
+    def _disliked(self, post: post_models.Comment):
+        return Like.objects.filter(target=post, liker=self.context['request'].user, type=LikeTypes.DISLIKE).exists()
 
     class Meta:
         model = post_models.Comment
-        fields = ['id', 'profile_image', 'likes', 'parent_comment', 'post_related', 'user', 'body', 'media',
+        fields = ['id', 'likes', 'dislikes', 'disliked', 'liked', 'parent_comment', 'post_related', 'user', 'body',
+                  'media',
                   'create_date',
                   'update_date', 'replies']
 
 
 class PostSerializer(ModelSerializer):
-    user = UserSerializers(read_only=True)
+    user = UserSerializerSecondType(read_only=True)
     comments = CommentSerializer(read_only=True, many=True)
     likes = serializers.SerializerMethodField('_likes')
-    profile_image = serializers.SerializerMethodField('_image')
+    dislikes = serializers.SerializerMethodField('_dislikes')
+    liked = serializers.SerializerMethodField('_liked')
+    disliked = serializers.SerializerMethodField('_disliked')
 
     @staticmethod
     def _likes(post: post_models.Post):
-        return post.likes.count()
+        return post.likes.filter(type=LikeTypes.LIKE).count()
 
     @staticmethod
-    def _image(comment: post_models.Comment):
-        return comment.user.profile.image
+    def _dislikes(post: post_models.Post):
+        return post.likes.filter(type=LikeTypes.DISLIKE).count()
+
+    def _liked(self, post: post_models.Post):
+        return Like.objects.filter(target=post, liker=self.context['request'].user, type=LikeTypes.LIKE).exists()
+
+    def _disliked(self, post: post_models.Post):
+        return Like.objects.filter(target=post, liker=self.context['request'].user, type=LikeTypes.DISLIKE).exists()
 
     class Meta:
         model = post_models.Post
-        fields = ['id', 'likes', 'profile_image', 'title', 'user', 'channel', 'body', 'media', 'likes', 'create_date',
+        fields = ['id', 'likes', 'dislikes', 'liked', 'dislikedg', 'title', 'user', 'channel', 'body', 'media', 'likes',
+                  'create_date',
                   'update_date', 'comments']
 
 
