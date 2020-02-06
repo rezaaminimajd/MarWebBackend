@@ -13,4 +13,5 @@ urlpatterns = [
     path('userposts/<slug:username>', views.UserPostsListAPIView.as_view(), name='user_posts'),
     path('channelposts/<int:channel_id>', views.ChannelPostsListAPIView.as_view(), name='channel_posts'),
     path('like/<int:action_id>', views.LikeAPIView.as_view(), name='like_action'),
+    path('insert-comment/<int:post_id>')
 ]
