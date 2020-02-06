@@ -149,3 +149,19 @@ class ForgotPasswordConfirmSerializer(serializers.ModelSerializer):
         if data['new_password1'] != data['new_password2']:
             raise serializers.ValidationError('passwords don\'t match!')
         return data
+
+
+class ProfileSerializerSecondType(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ['age', 'telephone_number', 'image']
+
+
+class UserSerializerSecondType(serializers.ModelSerializer):
+    profile = ProfileSerializerSecondType(read_only=True)
+
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'profile', 'username', 'password', 'repeat_password', 'age', 'telephone_number',
+                  'first_name',
+                  'last_name']
