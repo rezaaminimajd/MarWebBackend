@@ -5,7 +5,7 @@ from rest_polymorphic.serializers import PolymorphicSerializer
 
 from apps.account.serializers import UserSerializers, UserSerializerSecondType
 from apps.post import models as post_models
-from apps.post.models import LikeTypes
+from apps.post.models import LikeTypes, Like
 
 
 class PostAsListItemSerializer(ModelSerializer):
@@ -47,18 +47,27 @@ class SubCommentSerializer(ModelSerializer):
     user = UserSerializerSecondType(read_only=True)
     likes = serializers.SerializerMethodField('_likes')
     dislikes = serializers.SerializerMethodField('_dislikes')
+    liked = serializers.SerializerMethodField('_liked')
+    disliked = serializers.SerializerMethodField('_disliked')
 
     @staticmethod
-    def _likes(post: post_models.Post):
+    def _likes(post: post_models.Comment):
         return post.likes.filter(type=LikeTypes.LIKE).count()
 
     @staticmethod
-    def _dislikes(post: post_models.Post):
+    def _dislikes(post: post_models.Comment):
         return post.likes.filter(type=LikeTypes.DISLIKE).count()
+
+    def _liked(self, post: post_models.Comment):
+        return Like.objects.filter(target=post, liker=self.context['request'].user, type=LikeTypes.LIKE).exists()
+
+    def _disliked(self, post: post_models.Comment):
+        return Like.objects.filter(target=post, liker=self.context['request'].user, type=LikeTypes.DISLIKE).exists()
 
     class Meta:
         model = post_models.Comment
-        fields = ['id', 'likes', 'dislikes', 'post_related', 'user', 'body', 'media', 'create_date', 'update_date']
+        fields = ['id', 'likes', 'dislikes', 'liked', 'disliked', 'post_related', 'user', 'body', 'media',
+                  'create_date', 'update_date']
 
 
 class CommentSerializer(ModelSerializer):
@@ -67,18 +76,27 @@ class CommentSerializer(ModelSerializer):
     user = UserSerializerSecondType(read_only=True)
     likes = serializers.SerializerMethodField('_likes')
     dislikes = serializers.SerializerMethodField('_dislikes')
+    liked = serializers.SerializerMethodField('_liked')
+    disliked = serializers.SerializerMethodField('_disliked')
 
     @staticmethod
-    def _likes(post: post_models.Post):
+    def _likes(post: post_models.Comment):
         return post.likes.filter(type=LikeTypes.LIKE).count()
 
     @staticmethod
-    def _dislikes(post: post_models.Post):
+    def _dislikes(post: post_models.Comment):
         return post.likes.filter(type=LikeTypes.DISLIKE).count()
+
+    def _liked(self, post: post_models.Comment):
+        return Like.objects.filter(target=post, liker=self.context['request'].user, type=LikeTypes.LIKE).exists()
+
+    def _disliked(self, post: post_models.Comment):
+        return Like.objects.filter(target=post, liker=self.context['request'].user, type=LikeTypes.DISLIKE).exists()
 
     class Meta:
         model = post_models.Comment
-        fields = ['id', 'likes', 'dislikes', 'parent_comment', 'post_related', 'user', 'body', 'media',
+        fields = ['id', 'likes', 'dislikes', 'disliked', 'liked', 'parent_comment', 'post_related', 'user', 'body',
+                  'media',
                   'create_date',
                   'update_date', 'replies']
 
@@ -88,6 +106,8 @@ class PostSerializer(ModelSerializer):
     comments = CommentSerializer(read_only=True, many=True)
     likes = serializers.SerializerMethodField('_likes')
     dislikes = serializers.SerializerMethodField('_dislikes')
+    liked = serializers.SerializerMethodField('_liked')
+    disliked = serializers.SerializerMethodField('_disliked')
 
     @staticmethod
     def _likes(post: post_models.Post):
@@ -97,9 +117,16 @@ class PostSerializer(ModelSerializer):
     def _dislikes(post: post_models.Post):
         return post.likes.filter(type=LikeTypes.DISLIKE).count()
 
+    def _liked(self, post: post_models.Post):
+        return Like.objects.filter(target=post, liker=self.context['request'].user, type=LikeTypes.LIKE).exists()
+
+    def _disliked(self, post: post_models.Post):
+        return Like.objects.filter(target=post, liker=self.context['request'].user, type=LikeTypes.DISLIKE).exists()
+
     class Meta:
         model = post_models.Post
-        fields = ['id', 'likes', 'dislikes', 'title', 'user', 'channel', 'body', 'media', 'likes', 'create_date',
+        fields = ['id', 'likes', 'dislikes', 'liked', '', 'title', 'user', 'channel', 'body', 'media', 'likes',
+                  'create_date',
                   'update_date', 'comments']
 
 
