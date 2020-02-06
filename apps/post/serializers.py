@@ -5,6 +5,7 @@ from rest_polymorphic.serializers import PolymorphicSerializer
 
 from apps.account.serializers import UserSerializers, UserSerializerSecondType
 from apps.post import models as post_models
+from apps.post.models import LikeTypes
 
 
 class PostAsListItemSerializer(ModelSerializer):
@@ -45,14 +46,19 @@ class PostCreateSerializer(ModelSerializer):
 class SubCommentSerializer(ModelSerializer):
     user = UserSerializerSecondType(read_only=True)
     likes = serializers.SerializerMethodField('_likes')
+    dislikes = serializers.SerializerMethodField('_dislikes')
 
     @staticmethod
     def _likes(post: post_models.Post):
-        return post.likes.count()
+        return post.likes.filter(type=LikeTypes.LIKE).count()
+
+    @staticmethod
+    def _dislikes(post: post_models.Post):
+        return post.likes.filter(type=LikeTypes.DISLIKE).count()
 
     class Meta:
         model = post_models.Comment
-        fields = ['id', 'likes', 'post_related', 'user', 'body', 'media', 'create_date', 'update_date']
+        fields = ['id', 'likes', 'dislikes', 'post_related', 'user', 'body', 'media', 'create_date', 'update_date']
 
 
 class CommentSerializer(ModelSerializer):
@@ -60,14 +66,19 @@ class CommentSerializer(ModelSerializer):
     replies = SubCommentSerializer(many=True)
     user = UserSerializerSecondType(read_only=True)
     likes = serializers.SerializerMethodField('_likes')
+    dislikes = serializers.SerializerMethodField('_dislikes')
 
     @staticmethod
     def _likes(post: post_models.Post):
-        return post.likes.count()
+        return post.likes.filter(type=LikeTypes.LIKE).count()
+
+    @staticmethod
+    def _dislikes(post: post_models.Post):
+        return post.likes.filter(type=LikeTypes.DISLIKE).count()
 
     class Meta:
         model = post_models.Comment
-        fields = ['id', 'likes', 'parent_comment', 'post_related', 'user', 'body', 'media',
+        fields = ['id', 'likes', 'dislikes', 'parent_comment', 'post_related', 'user', 'body', 'media',
                   'create_date',
                   'update_date', 'replies']
 
@@ -76,14 +87,19 @@ class PostSerializer(ModelSerializer):
     user = UserSerializerSecondType(read_only=True)
     comments = CommentSerializer(read_only=True, many=True)
     likes = serializers.SerializerMethodField('_likes')
+    dislikes = serializers.SerializerMethodField('_dislikes')
 
     @staticmethod
     def _likes(post: post_models.Post):
-        return post.likes.count()
+        return post.likes.filter(type=LikeTypes.LIKE).count()
+
+    @staticmethod
+    def _dislikes(post: post_models.Post):
+        return post.likes.filter(type=LikeTypes.DISLIKE).count()
 
     class Meta:
         model = post_models.Post
-        fields = ['id', 'likes', 'title', 'user', 'channel', 'body', 'media', 'likes', 'create_date',
+        fields = ['id', 'likes', 'dislikes', 'title', 'user', 'channel', 'body', 'media', 'likes', 'create_date',
                   'update_date', 'comments']
 
 
