@@ -44,8 +44,14 @@ INSTALLED_APPS = [
     'notify',
     'rest_framework.authtoken',
     'corsheaders',
-
+    'django_elasticsearch_dsl'
 ]
+
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': 'localhost:9200'
+    }
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
