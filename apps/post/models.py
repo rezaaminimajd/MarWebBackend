@@ -63,7 +63,7 @@ class Post(UserActionTemplate):
 
 class Comment(UserActionTemplate):
     post_related = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE)
-    replies = models.ForeignKey('self', related_name='comments', on_delete=models.CASCADE, null=True, blank=True)
+    parent_comment = models.ForeignKey('self', related_name='replies', on_delete=models.CASCADE, null=True, blank=True)
 
     def pre_save(self):
         self.type = UserActionTypes.COMMENT

@@ -8,6 +8,7 @@ app_name = 'account'
 urlpatterns = [
     path('login', jwt_views.TokenObtainPairView.as_view(),
          name='token_obtain_pair'),
+    path('login/google', views.GoogleAPIView.as_view(), name='google_login'),
     path('token/refresh', jwt_views.TokenRefreshView.as_view(),
          name='token_refresh'),
     path('signup', views.SignUpView.as_view(), name='signup'),
@@ -16,7 +17,6 @@ urlpatterns = [
     path('profile-update', views.ProfileView.as_view(), name='profile_update'),
     path('password-update', views.ChangePassword.as_view(), name='password_update'),
     path('follow/<username>', views.FollowUserView.as_view()),
-    path('reset_password', views.ResetPasswordView.as_view()),
     path('followers/<username>', views.FollowersView.as_view()),
     path('followings/<username>', views.FollowingsView.as_view()),
     path('password/reset', views.ForgotPasswordView.as_view()),

@@ -8,12 +8,14 @@ class NotificationTypes:
     LIKE = 'like'
     POST = 'post'
     COMMENT = 'comment'
+    REPLY = 'reply'
     TYPES = (
         (FOLLOW_USER, 'follow user'),
         (FOLLOW_CHANNEL, 'follow channel'),
         (LIKE, 'like'),
         (POST, 'new post'),
         (COMMENT, 'new comment'),
+        (REPLY, 'reply')
     )
 
 
@@ -40,6 +42,8 @@ class Notification(models.Model):
             self.message = f'{self.from_user.username} commented on your post with id {self.target_id}'
         elif self.type == NotificationTypes.POST:
             self.message = f'{self.from_user.username} created new post in channel with id {self.target_id}'
+        elif self.type == NotificationTypes.REPLY:
+            self.message = f'{self.from_user.username} replied to your comment in post with id {self.target_id}'
 
     def save(self, *args, **kwargs):
         self.pre_save()
