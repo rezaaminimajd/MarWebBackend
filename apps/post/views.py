@@ -102,7 +102,6 @@ class CommentAPIView(GenericAPIView):
         if user != comment.user:
             return Response(data={'detail': 'this post is not for this user'}, status=status.HTTP_403_FORBIDDEN)
 
-        # todo delete
 
 
 class LikeAPIView(GenericAPIView):

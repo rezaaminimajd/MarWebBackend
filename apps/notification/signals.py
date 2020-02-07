@@ -27,6 +27,9 @@ def new_comment(sender, instance: post_models.Comment, created, **kwargs):
         post_owner = instance.post_related.user
         Notification.objects.create(from_user=instance.user, to_user=post_owner, target_id=instance.post_related.id,
                                     type=NotificationTypes.COMMENT)
+        if instance.parent_comment:
+            Notification.objects.create(from_user=instance.user, to_user=instance.parent_comment.user,
+                                        target_id=instance.post_related.id)
 
 
 @receiver(post_save, sender=post_models.Like)
