@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'notify',
     'rest_framework.authtoken',
     'corsheaders',
-    'django_elasticsearch_dsl'
+    'django_elasticsearch_dsl',
+    'apps.homepage'
 ]
 
 ELASTICSEARCH_DSL = {

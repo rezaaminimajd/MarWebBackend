@@ -40,26 +40,26 @@ profiles = Index('profile')
 
 
 @profiles.doc_type
-class ProfileDocument(DocType):
-    user = fields.ObjectField(properties={
-        'username': fields.TextField(),
-        'first_name': fields.TextField(),
-        'last_name': fields.TextField(),
-        'email': fields.TextField(),
+class UserDocument(DocType):
+    profile = fields.ObjectField(properties={
+        'age': fields.IntegerField(),
     })
 
     class Django:
-        model = Profile
+        model = User
         fields = [
-            'age',
+            'username',
+            'first_name',
+            'last_name',
+            'email'
         ]
         related_models = [User]
 
     def get_queryset(self):
-        return super(ProfileDocument, self).get_queryset().select_related(
-            'manufacturer'
+        return super(UserDocument, self).get_queryset().select_related(
+            'profile'
         )
 
     def get_instances_from_related(self, related_instance):
-        if isinstance(related_instance, User):
-            return related_instance.profile
+        if isinstance(related_instance, Profile):
+            return related_instance.user

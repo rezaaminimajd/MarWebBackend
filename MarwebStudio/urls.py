@@ -24,6 +24,7 @@ urlpatterns = [
                   path('post/', include('apps.post.urls')),
                   path('channel/', include('apps.channel.urls')),
                   path('notification/', include('apps.notification.urls')),
-                  path('notifications/', include('notify.urls', 'notifications'))
+                  path('notifications/', include('notify.urls', 'notifications')),
+                  path('homepage/', include('apps.homepage.urls')),
               ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + \
               static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
