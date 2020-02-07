@@ -3,6 +3,7 @@ from rest_framework import status
 
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
 from . import documents
 from ..post.serializers import PostAsListItemSerializer
@@ -14,15 +15,15 @@ from ..channel.serializers import ChannelAsListItemSerializer
 
 
 class SearchAPIView(GenericAPIView):
+    permission_classes = (IsAuthenticated,)
 
-    def get(self, request):
-        q = request.GET.get('q', '')
+    def get(self, request, search_query):
         posts = documents.PostDocument.search().query("query_string", default_field='*',
-                                                      query='*' + q + '*').to_queryset()
+                                                      query='*' + search_query + '*').to_queryset()
         channels = documents.ChannelDocument.search().query("query_string", default_field='*',
-                                                            query='*' + q + '*').to_queryset()
+                                                            query='*' + search_query + '*').to_queryset()
         accounts = documents.UserDocument.search().query("query_string", default_field='*',
-                                                         query='*' + q + '*').to_queryset()
+                                                         query='*' + search_query + '*').to_queryset()
         posts = PostAsListItemSerializer(posts, many=True).data
         channels = ChannelAsListItemSerializer(channels, many=True).data
         accounts = UserSerializerSecondType(accounts, many=True).data

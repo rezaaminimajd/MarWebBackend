@@ -9,8 +9,9 @@ https://docs.djangoproject.com/en/2.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
-
+import datetime
 import os
+from decouple import config
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,8 +26,6 @@ SECRET_KEY = ')np46hea#z*7h160$z5472-!$$p8l(7@q@xg$t_yu=z45olf82'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -47,6 +46,8 @@ INSTALLED_APPS = [
     'django_elasticsearch_dsl',
     'apps.homepage'
 ]
+# Application definition
+
 
 ELASTICSEARCH_DSL = {
     'default': {
@@ -152,6 +153,17 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 100,
 }
 
-FCM_DJANGO_SETTINGS = {
-    "FCM_SERVER_KEY": ""
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
+
+    'JWT_ALLOW_REFRESH': True,
+
+    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=7),
 }
+
+EMAIL_BACKEND = config("EMAIL_BACKEND")
+EMAIL_USE_TLS = config('EMAIL_USE_TLS')
+EMAIL_HOST = config('EMAIL_HOST')
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+EMAIL_PORT = config('EMAIL_PORT')

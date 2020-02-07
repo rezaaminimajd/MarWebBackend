@@ -1,5 +1,8 @@
+import json
 import secrets
 
+import requests
+from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.hashers import check_password
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
@@ -9,6 +12,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from rest_framework import permissions, status
 from rest_framework.generics import GenericAPIView, get_object_or_404
 from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from .serializers import *
 
@@ -142,7 +146,7 @@ class ForgotPasswordView(GenericAPIView):
         reset_password_token.save()
 
         context = {
-            'domain': 'localhost:8000',
+            'domain': 'localhost:3000',
             'username': user.username,
             'uid': reset_password_token.uid,
             'token': reset_password_token.token,
@@ -184,3 +188,30 @@ class AllUsersListAPIView(GenericAPIView):
     def get(self, request):
         data = self.get_serializer(self.get_queryset(), many=True).data
         return Response(data={'users': data}, status=status.HTTP_200_OK)
+
+
+class GoogleAPIView(GenericAPIView):
+    def post(self, request):
+        payload = {'access_token': request.data.get("token")}
+        r = requests.get('https://www.googleapis.com/oauth2/v2/userinfo', params=payload)
+        data = json.loads(r.text)
+
+        if 'error' in data:
+            content = {'message': 'wrong google token / this google token is already expired.'}
+            return Response(data=content, status=status.HTTP_200_OK)
+
+        try:
+            user = User.objects.get(email=data['email'])
+        except User.DoesNotExist:
+            user = User()
+            user.username = data['email']
+            user.password = make_password(BaseUserManager().make_random_password())
+            user.email = data['email']
+            user.save()
+            Profile.objects.create(user=user, age=0, telephone_number='', image=data['picture'])
+            channel = Channel.objects.create(creator=user, title=user.username, main_channel=True)
+            channel.authors.add(user)
+
+        token = RefreshToken.for_user(user)
+        response = {'access_token': str(token.access_token), 'refresh_token': str(token)}
+        return Response(data=response, status=status.HTTP_200_OK)

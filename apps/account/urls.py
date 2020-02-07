@@ -8,6 +8,7 @@ app_name = 'account'
 urlpatterns = [
     path('login', jwt_views.TokenObtainPairView.as_view(),
          name='token_obtain_pair'),
+    path('login/google', views.GoogleAPIView.as_view(), name='google_login'),
     path('token/refresh', jwt_views.TokenRefreshView.as_view(),
          name='token_refresh'),
     path('signup', views.SignUpView.as_view(), name='signup'),
