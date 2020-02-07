@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.models import User
+from django.db.models import Count
 
 from rest_framework import status
 from rest_framework import parsers
@@ -14,6 +15,15 @@ from apps.account import models as account_models
 
 
 # Create your views here.
+
+class TopChannelsAPIView(GenericAPIView):
+    queryset = channel_models.Channel.objects.all()
+    serializer_class = channel_serializers.ChannelAsListItemSerializer
+
+    def get(self, request):
+        channels = self.get_queryset().annotate(followers_count=Count('followers_channel')).order_by('-followers_count')
+        data = self.get_serializer(channels, many=True).data
+        return Response(data={'channels': data}, status=status.HTTP_200_OK)
 
 
 class UserChannelsListAPIView(GenericAPIView):

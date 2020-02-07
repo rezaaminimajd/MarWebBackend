@@ -40,21 +40,6 @@ class LogoutView(GenericAPIView):
         return Response({'detail': 'logout successfully'}, status=status.HTTP_200_OK)
 
 
-class ResetPasswordView(GenericAPIView):
-    def post(self, request):
-        old_password = request.data['old_password']
-        new_password = request.data['new_password']
-        repeat_new_password = request.data['repeat_new_password']
-        user: User = request.user
-        if not check_password(old_password, user.password):
-            return Response({'detail': 'password is wrong'}, status=status.HTTP_403_FORBIDDEN)
-        if new_password != repeat_new_password:
-            return Response({'detail': 'new passwords don\'t match'}, status=status.HTTP_403_FORBIDDEN)
-        user.password = make_password(new_password)
-        user.save()
-        return Response({'detail': 'password change successfully'}, status=status.HTTP_200_OK)
-
-
 class ProfileView(GenericAPIView):
     serializer_class = ProfileSerializers
 
@@ -133,7 +118,6 @@ class ForgotPasswordView(GenericAPIView):
 
     def post(self, request):
         data = self.get_serializer(request.data).data
-
         user = get_object_or_404(User, email=data['email'])
 
         uid = urlsafe_base64_encode(force_bytes(user.id))
