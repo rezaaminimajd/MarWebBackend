@@ -73,6 +73,7 @@ class ChangePassword(GenericAPIView):
 
 
 class FollowUserView(GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, username):
         source: User = request.user
@@ -94,6 +95,7 @@ class FollowUserView(GenericAPIView):
 
 class FollowersView(GenericAPIView):
     serializer_class = PolymorphicFollowSerializers
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, username):
         user = get_object_or_404(User, username=username)
@@ -105,6 +107,7 @@ class FollowersView(GenericAPIView):
 
 class FollowingsView(GenericAPIView):
     serializer_class = PolymorphicFollowSerializers
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, username):
         user = get_object_or_404(User, username=username)
@@ -172,6 +175,7 @@ class ForgotPasswordConfirmView(GenericAPIView):
 class AllUsersListAPIView(GenericAPIView):
     serializer_class = UserSerializers
     queryset = User.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
         data = self.get_serializer(self.get_queryset(), many=True).data

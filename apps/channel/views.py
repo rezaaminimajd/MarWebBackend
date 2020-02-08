@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.db.models import Count
 
 from rest_framework import status
-from rest_framework import parsers
+from rest_framework import parsers, permissions
 from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
 
@@ -19,6 +19,7 @@ from apps.account import models as account_models
 class TopChannelsAPIView(GenericAPIView):
     queryset = channel_models.Channel.objects.all()
     serializer_class = channel_serializers.ChannelAsListItemSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
         channels = self.get_queryset().annotate(followers_count=Count('followers_channel')).order_by('-followers_count')
@@ -29,6 +30,7 @@ class TopChannelsAPIView(GenericAPIView):
 class UserChannelsListAPIView(GenericAPIView):
     queryset = channel_models.Channel.objects.all()
     serializer_class = channel_serializers.ChannelAsListItemSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, username):
         channels = self.get_queryset().filter(creator__username=username)
@@ -36,19 +38,9 @@ class UserChannelsListAPIView(GenericAPIView):
         return Response(data={'channels': data}, status=status.HTTP_200_OK)
 
 
-class ChannelsSearchListAPIView(GenericAPIView):
-    queryset = channel_models.Channel.objects.all()
-    serializer_class = channel_serializers.ChannelAsListItemSerializer
-
-    def get(self, request, search_query):
-        channels = channel_models.Channel.objects.filter(name__startswith=search_query)
-        data = self.get_serializer(channels, many=True).data
-        print('data:', data)
-        return Response(data={'channels': data}, status=status.HTTP_200_OK)
-
-
 class ChannelAPIView(GenericAPIView):
     parser_classes = (parsers.MultiPartParser,)
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, channel_id):
         channel = get_object_or_404(channel_models.Channel, id=channel_id)
@@ -78,6 +70,7 @@ class ChannelAPIView(GenericAPIView):
 
 
 class FollowAPIView(GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, channel_id):
         source: User = request.user
