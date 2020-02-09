@@ -73,6 +73,7 @@ class ChangePassword(GenericAPIView):
 
 
 class FollowUserView(GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, username):
         source: User = request.user
@@ -94,6 +95,7 @@ class FollowUserView(GenericAPIView):
 
 class FollowersView(GenericAPIView):
     serializer_class = PolymorphicFollowSerializers
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, username):
         user = get_object_or_404(User, username=username)
@@ -105,6 +107,7 @@ class FollowersView(GenericAPIView):
 
 class FollowingsView(GenericAPIView):
     serializer_class = PolymorphicFollowSerializers
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, username):
         user = get_object_or_404(User, username=username)
@@ -154,12 +157,16 @@ class ForgotPasswordConfirmView(GenericAPIView):
 
     def post(self, request):
         data = self.get_serializer(request.data).data
+        print(data)
 
         rs_token = get_object_or_404(ForgotPasswordToken, uid=data['uid'], token=data['token'])
         if (timezone.now() - rs_token.expiration_date).total_seconds() > 24 * 60 * 60:
             return Response({'error': 'Token Expired'}, status=400)
+        if data['new_password1'] != data['new_password2']:
+            return Response(data={'errors': ['passwords don\'t match!']}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
         user = get_object_or_404(User, id=urlsafe_base64_decode(data['uid']).decode('utf-8'))
+        rs_token.delete()
         user.password = make_password(data['new_password1'])
         user.save()
         return Response({'detail': 'Successfully Changed Password'}, status=200)
@@ -168,6 +175,7 @@ class ForgotPasswordConfirmView(GenericAPIView):
 class AllUsersListAPIView(GenericAPIView):
     serializer_class = UserSerializers
     queryset = User.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
         data = self.get_serializer(self.get_queryset(), many=True).data

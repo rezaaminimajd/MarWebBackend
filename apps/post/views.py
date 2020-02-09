@@ -103,7 +103,6 @@ class CommentAPIView(GenericAPIView):
             return Response(data={'detail': 'this post is not for this user'}, status=status.HTTP_403_FORBIDDEN)
 
 
-
 class LikeAPIView(GenericAPIView):
     permission_classes = [IsAuthenticated]
 
@@ -198,6 +197,7 @@ class ParticipatedPostsAPIView(GenericAPIView):
 class UserPostsListAPIView(GenericAPIView):
     serializer_class = post_serializers.PostAsListItemSerializer
     queryset = post_models.Post.objects.all()
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, username):
         data = self.get_serializer(self.get_queryset().filter(user__username=username), many=True).data
