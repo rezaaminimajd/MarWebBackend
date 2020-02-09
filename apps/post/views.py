@@ -90,7 +90,7 @@ class CommentAPIView(GenericAPIView):
 
     def put(self, request, comment_id):
         old_comment = get_object_or_404(Comment, id=comment_id)
-        new_comment = self.get_serializer(instance=old_comment, data=request.id)
+        new_comment = self.get_serializer(instance=old_comment, data=request.data)
         if new_comment.is_valid(raise_exception=True):
             new_comment.save()
             return Response(data={'detail': 'Comment updated successfully'})
