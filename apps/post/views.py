@@ -88,12 +88,12 @@ class CommentAPIView(GenericAPIView):
             return Response(data={'detail': 'Comment has been submitted'}, status=status.HTTP_200_OK)
         return Response(data={'error': 'Comment not submitted! an error occurred'})
 
-    def put(self, request, post_id, comment_id):
-        user: User = request.user
-        post = get_object_or_404(Post, id=post_id)
-        comment = post.comments.filter(id=comment_id)
-        if user != comment.user:
-            return Response(data={'detail': 'this post is not for this user'}, status=status.HTTP_403_FORBIDDEN)
+    def put(self, request, comment_id):
+        old_comment = get_object_or_404(Comment, id=comment_id)
+        new_comment = self.get_serializer(instance=old_comment, data=request.id)
+        if new_comment.is_valid(raise_exception=True):
+            new_comment.save()
+            return Response(data={'detail': 'Comment updated successfully'})
 
     def delete(self, request, post_id, comment_id):
         user: User = request.user
