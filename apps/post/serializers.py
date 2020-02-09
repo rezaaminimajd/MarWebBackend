@@ -46,7 +46,7 @@ class PostCreateSerializer(ModelSerializer):
 class CommentCreateSerializer(ModelSerializer):
     class Meta:
         model = post_models.Comment
-        fields = ['post_related', 'replies', 'body', 'media']
+        fields = ['post_related', 'parent_comment', 'body', 'media']
 
     def validate(self, attrs):
         attrs['user'] = self.context['request'].user
