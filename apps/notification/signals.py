@@ -18,7 +18,6 @@ def new_post(sender, instance: post_models.Post, created, **kwargs):
                                       target_id=instance.id,
                                       type=NotificationTypes.POST) for follower in followers]
         objs = Notification.objects.bulk_create(notifications)
-        print(objs, '<=========')
 
 
 @receiver(post_save, sender=post_models.Comment)
@@ -54,4 +53,3 @@ def follow_channel(sender, instance: account_models.FollowChannel, created, **kw
         followed_channel_owner = instance.target.creator
         notif = Notification.objects.create(from_user=instance.source, to_user=followed_channel_owner,
                                             target_id=instance.target.id, type=NotificationTypes.FOLLOW_CHANNEL)
-        print(notif)
