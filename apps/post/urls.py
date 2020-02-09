@@ -16,4 +16,5 @@ urlpatterns = [
     path('dislike/<int:action_id>', views.DisLikeAPIView.as_view(), name='dislike_action'),
     path('insert-comment', views.CommentAPIView.as_view(), name='insert_comment'),
     path('insert-comment/<int:comment_id>', views.CommentAPIView.as_view(), name='update_comment'),
+    path('delete-comment/<int:comment_id>', views.CommentAPIView.as_view(), name='delete_comment')
 ]
