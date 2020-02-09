@@ -49,22 +49,20 @@ class PostAPIView(GenericAPIView):
         return Response(data={'detail': 'Post has been submitted'}, status=status.HTTP_200_OK)
 
     def put(self, request, post_id):
-        user: User = request.user
-        post: Post = get_object_or_404(Post, id=post_id)
-        if user != post.user:
-            return Response(data={'detail': 'this post is not for this user'}, status=status.HTTP_403_FORBIDDEN)
-        target_post = self.get_serializer(data=request.data)
-        target_post.is_valid(raise_exception=True)
-        # todo nadombe
-        return Response(data={'detail': 'post updated successfully'}, status=status.HTTP_200_OK)
+        old_post = get_object_or_404(Post, id=post_id)
+        if request.user.id != old_post.user.id:
+            return Response(data={'errors': 'This Post doesnt belongs to you'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+        new_post = post_serializers.PostCreateSerializer(instance=old_post, data=request.data)
+        if new_post.is_valid(raise_exception=True):
+            new_post.save()
+            return Response(data={'detail': 'Post updated successfully'}, status=status.HTTP_200_OK)
 
     def delete(self, request, post_id):
-        user: User = request.user
-        post: Post = get_object_or_404(Post, id=post_id)
-        if user != post.user:
-            return Response(data={'detail': 'this post is not for this user'}, status=status.HTTP_403_FORBIDDEN)
-        post.delete()  # todo nadombe
-        return Response(data={'detail': 'post deleted successfully'}, status=status.HTTP_200_OK)
+        post = get_object_or_404(Post, id=post_id)
+        if request.user.id != post.user.id:
+            return Response(data={'errors': 'This Post doesnt belongs to you'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+        post.delete()
+        return Response(data={'detail': 'Your Post deleted Successfully'}, status=status.HTTP_200_OK)
 
 
 class CommentsListAPIView(GenericAPIView):
@@ -90,17 +88,21 @@ class CommentAPIView(GenericAPIView):
 
     def put(self, request, comment_id):
         old_comment = get_object_or_404(Comment, id=comment_id)
+        if request.user.id != old_comment.user.id:
+            return Response(data={'errors': 'This Comment doesnt belongs to you'},
+                            status=status.HTTP_406_NOT_ACCEPTABLE)
         new_comment = self.get_serializer(instance=old_comment, data=request.data)
         if new_comment.is_valid(raise_exception=True):
             new_comment.save()
-            return Response(data={'detail': 'Comment updated successfully'})
+            return Response(data={'detail': 'Comment updated successfully'}, status=status.HTTP_200_OK)
 
-    def delete(self, request, post_id, comment_id):
-        user: User = request.user
-        post = get_object_or_404(Post, id=post_id)
-        comment = post.comments.filter(id=comment_id)
-        if user != comment.user:
-            return Response(data={'detail': 'this post is not for this user'}, status=status.HTTP_403_FORBIDDEN)
+    def delete(self, request, comment_id):
+        comment = get_object_or_404(Comment, id=comment_id)
+        if request.user.id != comment.user.id:
+            return Response(data={'errors': 'This Comment doesnt belongs to you'},
+                            status=status.HTTP_406_NOT_ACCEPTABLE)
+        comment.delete()
+        return Response(data={'detail': 'Your Comment deleted Successfully'}, status=status.HTTP_200_OK)
 
 
 class LikeAPIView(GenericAPIView):
