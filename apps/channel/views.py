@@ -33,7 +33,8 @@ class UserChannelsListAPIView(GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, username):
-        channels = self.get_queryset().filter(creator__username=username)
+        user = get_object_or_404(User, username=username)
+        channels = user.author_channels.all()
         data = self.get_serializer(channels, many=True).data
         return Response(data={'channels': data}, status=status.HTTP_200_OK)
 

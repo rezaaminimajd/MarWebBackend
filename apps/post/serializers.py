@@ -1,7 +1,10 @@
+from django.contrib.auth.models import User
 from rest_framework import serializers
+from rest_framework.generics import get_object_or_404
 from rest_framework.relations import PrimaryKeyRelatedField
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from rest_polymorphic.serializers import PolymorphicSerializer
+from rest_framework_recursive.fields import RecursiveField
 
 from apps.account.serializers import UserSerializers, UserSerializerSecondType
 from apps.post import models as post_models
@@ -42,6 +45,13 @@ class PostCreateSerializer(ModelSerializer):
         model = post_models.Post
         fields = ['title', 'user', 'channel', 'body', 'media']
 
+    def validate(self, attrs):
+        user = attrs['user']
+        user_channels = user.author_channels.all().values_list('id', flat=True)
+        if attrs['channel'].id not in user_channels:
+            raise serializers.ValidationError("You don't have writing permission to this channel")
+        return attrs
+
 
 class CommentCreateSerializer(ModelSerializer):
     class Meta:
@@ -53,36 +63,9 @@ class CommentCreateSerializer(ModelSerializer):
         return attrs
 
 
-class SubCommentSerializer(ModelSerializer):
-    user = UserSerializerSecondType(read_only=True)
-    likes = serializers.SerializerMethodField('_likes')
-    dislikes = serializers.SerializerMethodField('_dislikes')
-    liked = serializers.SerializerMethodField('_liked')
-    disliked = serializers.SerializerMethodField('_disliked')
-
-    @staticmethod
-    def _likes(post: post_models.Comment):
-        return post.likes.filter(type=LikeTypes.LIKE).count()
-
-    @staticmethod
-    def _dislikes(post: post_models.Comment):
-        return post.likes.filter(type=LikeTypes.DISLIKE).count()
-
-    def _liked(self, post: post_models.Comment):
-        return Like.objects.filter(target=post, liker=self.context['request'].user, type=LikeTypes.LIKE).exists()
-
-    def _disliked(self, post: post_models.Comment):
-        return Like.objects.filter(target=post, liker=self.context['request'].user, type=LikeTypes.DISLIKE).exists()
-
-    class Meta:
-        model = post_models.Comment
-        fields = ['id', 'likes', 'dislikes', 'liked', 'disliked', 'post_related', 'user', 'body', 'media',
-                  'create_date', 'update_date']
-
-
 class CommentSerializer(ModelSerializer):
     parent_comment = PrimaryKeyRelatedField(read_only=True)
-    replies = SubCommentSerializer(many=True)
+    replies = serializers.ListSerializer(child=RecursiveField())
     user = UserSerializerSecondType(read_only=True)
     likes = serializers.SerializerMethodField('_likes')
     dislikes = serializers.SerializerMethodField('_dislikes')
