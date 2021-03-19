@@ -7,7 +7,7 @@ django-notify-x==0.1.9
 django-phonenumber-field==4.0.0
 django-polymorphic==2.1.2
 django-rest-polymorphic==0.1.8
-djangorestframework==3.11.0
+djangorestframework==3.11.2
 djangorestframework-simplejwt==4.4.0
 phonenumbers==8.11.1
 Pillow==7.0.0
