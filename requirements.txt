@@ -1,5 +1,5 @@
 asgiref==3.2.3
-Babel==2.8.0
+Babel==2.9.1
 certifi==2019.11.28
 Django==2.2.8
 django-jsonfield==1.4.0
