@@ -11,7 +11,7 @@ djangorestframework==3.11.0
 djangorestframework-simplejwt==4.4.0
 phonenumbers==8.11.1
 Pillow==7.0.0
-PyJWT==1.7.1
+PyJWT==2.4.0
 pytz==2019.3
 six==1.13.0
 sqlparse==0.3.0
