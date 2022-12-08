@@ -1,6 +1,6 @@
 asgiref==3.2.3
 Babel==2.8.0
-certifi==2019.11.28
+certifi==2022.12.7
 Django==2.2.8
 django-jsonfield==1.4.0
 django-notify-x==0.1.9
